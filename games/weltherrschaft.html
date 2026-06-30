@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan zur Weltherrschaft – Pixel Arcade</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .lab {
+      max-width: 760px; margin: 0 auto; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 18px;
+    }
+    @media (max-width: 680px) { .lab { grid-template-columns: 1fr; } }
+
+    .brain-panel {
+      background: linear-gradient(160deg, var(--panel), var(--bg-2));
+      border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
+      padding: 24px; text-align: center; box-shadow: var(--shadow);
+    }
+    .brain {
+      font-size: 6rem; cursor: pointer; user-select: none;
+      transition: transform .05s ease; display: inline-block;
+      filter: drop-shadow(0 6px 18px rgba(108,92,231,.5));
+    }
+    .brain:active { transform: scale(.9); }
+    .speech {
+      min-height: 44px; margin: 12px auto 0; max-width: 320px;
+      font-style: italic; color: var(--accent-2); font-size: .95rem;
+    }
+    .stats { font-size: 1.05rem; line-height: 1.9; margin-top: 8px; }
+    .stats b { color: var(--accent-2); }
+
+    .shop { text-align: left; }
+    .shop h3 { margin-bottom: 12px; }
+    .upgrade {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      cursor: pointer; transition: border-color .15s ease, opacity .15s ease;
+    }
+    .upgrade:hover { border-color: var(--accent); }
+    .upgrade.locked { opacity: .45; cursor: not-allowed; }
+    .upgrade .info small { color: var(--muted); display: block; font-size: .8rem; }
+    .upgrade .cost { white-space: nowrap; font-weight: 700; color: var(--warn); }
+    .upgrade .owned { color: var(--good); font-size: .85rem; }
+
+    .progress-wrap { margin: 18px auto; max-width: 760px; }
+    .bar { height: 22px; background: #181a2e; border-radius: 11px; overflow: hidden; }
+    .bar > div {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .3s ease;
+    }
+    .win {
+      max-width: 760px; margin: 18px auto; padding: 20px;
+      background: linear-gradient(160deg, #2d1b4e, #1a1c33);
+      border: 1px solid var(--accent); border-radius: 14px; text-align: center;
+      display: none;
+    }
+    .win.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container game-shell">
+    <div class="topbar">
+      <a class="btn secondary" href="../index.html">← Arcade</a>
+      <h2>🧠 Plan zur Weltherrschaft</h2>
+      <button class="btn secondary" id="reset">Reset</button>
+    </div>
+    <p class="controls-hint" style="margin-bottom:18px;">
+      „Was machen wir heute Nacht, Brain?" – „Dasselbe wie jede Nacht, Pinky:
+      Klick auf das Gehirn und erobere die Welt!"
+    </p>
+
+    <div class="ad-slot"></div>
+
+    <div class="lab">
+      <div class="brain-panel">
+        <div class="brain" id="brain" title="Klick mich!">🧠</div>
+        <div class="speech" id="speech">Narf! Klick auf das Gehirn.</div>
+        <div class="stats">
+          💡 Ideen: <b id="ideas">0</b><br />
+          💶 Geld: <b id="money">0 €</b><br />
+          ⚙️ pro Sekunde: <b id="perSec">0</b><br />
+          👆 pro Klick: <b id="perClick">1</b>
+        </div>
+      </div>
+
+      <div class="brain-panel shop">
+        <h3>🗂️ Geniale Pläne</h3>
+        <div id="shop"></div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <p style="text-align:center;color:var(--muted);margin-bottom:8px;">
+        Fortschritt zur Weltherrschaft: <b id="pct">0%</b> (Ziel: 1.000.000 €)
+      </p>
+      <div class="bar"><div id="barfill"></div></div>
+    </div>
+
+    <div class="win" id="win">
+      <h2>🌍 WELTHERRSCHAFT ERREICHT! 🌍</h2>
+      <p style="margin-top:10px;">Brain: „Endlich, Pinky. Die Welt gehört uns – und eine Million dazu!"</p>
+    </div>
+  </div>
+
+  <script src="../js/ads.js"></script>
+  <script>
+    const SPEECHES = [
+      "Narf!", "Zort!", "Egad!", "Poit!",
+      "Genial, Brain!", "Bist du dir sicher, Pinky?",
+      "Wir brauchen mehr Ideen!", "Heute Nacht erobern wir die Welt!",
+      "Troz!", "Pinky, konzentrier dich!"
+    ];
+
+    const PLANS = [
+      { id: "pinky",   name: "Pinky anheuern",        desc: "+1 Idee/Sek",        base: 15,    rate: 1,    perClick: 0,  cost: 0, owned: 0 },
+      { id: "kaffee",  name: "Kaffee für Brain",      desc: "+2 pro Klick",       base: 50,    rate: 0,    perClick: 2,  cost: 0, owned: 0 },
+      { id: "labor",   name: "Geheimlabor ausbauen",  desc: "+5 Ideen/Sek",       base: 200,   rate: 5,    perClick: 0,  cost: 0, owned: 0 },
+      { id: "roboter", name: "Roboter-Armee",         desc: "+25 Ideen/Sek",      base: 1100,  rate: 25,   perClick: 0,  cost: 0, owned: 0 },
+      { id: "satellit",name: "Hypno-Satellit",        desc: "+120 Ideen/Sek",     base: 6000,  rate: 120,  perClick: 0,  cost: 0, owned: 0 },
+      { id: "tv",      name: "TV-Sender übernehmen",  desc: "+600 Ideen/Sek",     base: 32000, rate: 600,  perClick: 0,  cost: 0, owned: 0 },
+      { id: "rakete",  name: "Mond-Rakete",           desc: "+4000 Ideen/Sek",    base: 180000,rate: 4000, perClick: 0,  cost: 0, owned: 0 },
+    ];
+
+    const GOAL = 1000000;
+    const IDEA_VALUE = 1; // 1 Idee = 1 € (kumuliert)
+
+    let state = { ideas: 0, money: 0, perClick: 1, plans: {} };
+
+    function load() {
+      const s = localStorage.getItem("weltherrschaft");
+      if (s) {
+        try {
+          const d = JSON.parse(s);
+          state.ideas = d.ideas || 0;
+          state.money = d.money || 0;
+          state.perClick = d.perClick || 1;
+          state.plans = d.plans || {};
+        } catch (e) {}
+      }
+      PLANS.forEach(p => { p.owned = state.plans[p.id] || 0; p.cost = costOf(p); });
+    }
+    function save() {
+      state.plans = {};
+      PLANS.forEach(p => state.plans[p.id] = p.owned);
+      localStorage.setItem("weltherrschaft", JSON.stringify(state));
+    }
+
+    function costOf(p) { return Math.floor(p.base * Math.pow(1.15, p.owned)); }
+    function perSec() { return PLANS.reduce((s, p) => s + p.rate * p.owned, 0); }
+
+    function fmt(n) {
+      n = Math.floor(n);
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + " Mrd";
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + " Mio";
+      if (n >= 1e3) return (n / 1e3).toFixed(1) + "k";
+      return n.toString();
+    }
+
+    function say(t) { document.getElementById("speech").textContent = t; }
+
+    function render() {
+      document.getElementById("ideas").textContent = fmt(state.ideas);
+      document.getElementById("money").textContent = fmt(state.money) + " €";
+      document.getElementById("perSec").textContent = fmt(perSec());
+      document.getElementById("perClick").textContent = state.perClick;
+
+      const pct = Math.min(100, (state.money / GOAL) * 100);
+      document.getElementById("pct").textContent = pct.toFixed(1) + "%";
+      document.getElementById("barfill").style.width = pct + "%";
+      if (state.money >= GOAL) document.getElementById("win").classList.add("show");
+
+      const shop = document.getElementById("shop");
+      shop.innerHTML = "";
+      PLANS.forEach(p => {
+        p.cost = costOf(p);
+        const afford = state.ideas >= p.cost;
+        const el = document.createElement("div");
+        el.className = "upgrade" + (afford ? "" : " locked");
+        el.innerHTML =
+          '<div class="info"><strong>' + p.name + '</strong>' +
+          '<small>' + p.desc + '</small>' +
+          '<span class="owned">im Besitz: ' + p.owned + '</span></div>' +
+          '<div class="cost">' + fmt(p.cost) + ' 💡</div>';
+        el.addEventListener("click", () => buy(p));
+        shop.appendChild(el);
+      });
+    }
+
+    function buy(p) {
+      p.cost = costOf(p);
+      if (state.ideas < p.cost) { say("Nicht genug Ideen, Pinky!"); return; }
+      state.ideas -= p.cost;
+      p.owned++;
+      state.perClick = 1 + PLANS.reduce((s, x) => s + x.perClick * x.owned, 0);
+      say(SPEECHES[(Math.random() * SPEECHES.length) | 0]);
+      save(); render();
+    }
+
+    document.getElementById("brain").addEventListener("click", () => {
+      state.ideas += state.perClick;
+      state.money += state.perClick * IDEA_VALUE;
+      if (Math.random() < 0.15) say(SPEECHES[(Math.random() * SPEECHES.length) | 0]);
+      render();
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      if (!confirm("Wirklich alles zurücksetzen?")) return;
+      localStorage.removeItem("weltherrschaft");
+      state = { ideas: 0, money: 0, perClick: 1, plans: {} };
+      PLANS.forEach(p => { p.owned = 0; });
+      document.getElementById("win").classList.remove("show");
+      render();
+    });
+
+    // Idle-Tick: Ideen -> auch Geld
+    setInterval(() => {
+      const gain = perSec() / 10;
+      if (gain > 0) {
+        state.ideas += gain;
+        state.money += gain * IDEA_VALUE;
+        render();
+      }
+    }, 100);
+
+    setInterval(save, 5000);
+
+    load();
+    render();
+  </script>
+</body>
+</html>

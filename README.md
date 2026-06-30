@@ -10,11 +10,17 @@ Frameworks, keine Build-Tools, läuft auf jedem statischen Hosting.
 ├── css/style.css       # Styling
 ├── js/ads.js           # Monetarisierungs-Layer (Werbeplätze)
 └── games/
+    ├── weltherrschaft.html  # 🧠🐭 Pinky & Brain – Idle-Clicker zur ersten Million
     ├── snake.html
     ├── breakout.html
     ├── 2048.html
     └── flappy.html
 ```
+
+> ⭐ **Highlight:** *Pinky & Brain – Plan zur Weltherrschaft* ist ein Idle-/Clicker-Spiel.
+> Klick das Gehirn, sammle geniale Ideen, kauf Pläne (Pinky, Geheimlabor, Roboter-Armee,
+> Hypno-Satellit …) und arbeite dich Richtung 1.000.000 € und Weltherrschaft. Fortschritt
+> wird lokal gespeichert.
 
 ## ▶️ Lokal starten
 
