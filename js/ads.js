@@ -19,6 +19,13 @@ const MONETIZATION = {
 
 function renderAds() {
   const slots = document.querySelectorAll(".ad-slot");
+
+  // Pro-Käufer (1,99 €) spielen werbefrei: Werbeplätze entfernen.
+  if (window.STORE && window.STORE.isPro()) {
+    slots.forEach((slot) => slot.remove());
+    return;
+  }
+
   const active = MONETIZATION.adsenseClientId && MONETIZATION.adsenseSlotId;
 
   slots.forEach((slot) => {
