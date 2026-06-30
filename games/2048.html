@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2048 – Pixel Arcade</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .board {
+      width: 320px; height: 320px; margin: 0 auto;
+      background: #181a2e; border-radius: 12px; padding: 10px;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr); gap: 10px;
+      box-shadow: var(--shadow); touch-action: none;
+    }
+    .tile {
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-weight: 700; font-size: 1.6rem;
+      background: #23263f; color: #eef0ff;
+      transition: transform .08s ease;
+    }
+    .t2{background:#3a3f63}.t4{background:#475089}.t8{background:#6c5ce7}
+    .t16{background:#8a5cf0}.t32{background:#b15cf0}.t64{background:#e84393}
+    .t128{background:#00b894;font-size:1.4rem}.t256{background:#00cec9;font-size:1.4rem}
+    .t512{background:#0984e3;font-size:1.4rem}.t1024{background:#fdcb6e;color:#222;font-size:1.2rem}
+    .t2048{background:#f1c40f;color:#222;font-size:1.2rem}
+  </style>
+</head>
+<body>
+  <div class="container game-shell">
+    <div class="topbar">
+      <a class="btn secondary" href="../index.html">← Arcade</a>
+      <h2>🔢 2048</h2>
+      <button class="btn" id="restart">Neu starten</button>
+    </div>
+
+    <div class="hud">
+      <div>Punkte: <b id="score">0</b></div>
+      <div>Bestwert: <b id="best">0</b></div>
+    </div>
+
+    <div class="board" id="board"></div>
+    <p class="controls-hint">Pfeiltasten / WASD oder wischen auf dem Handy.</p>
+
+    <div class="overlay" id="overlay" style="max-width:340px;margin:16px auto;padding:18px;text-align:center;background:linear-gradient(160deg,var(--panel),var(--bg-2));border:1px solid var(--accent);border-radius:14px;display:none;">
+      <h2>Game Over</h2>
+      <p id="ovText" style="margin:10px 0;color:var(--muted);"></p>
+      <button class="btn" onclick="init()">Nochmal</button>
+    </div>
+
+    <div class="ad-slot"></div>
+  </div>
+
+  <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
+  <script>
+    const boardEl = document.getElementById("board");
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+    let grid, score, best = +(localStorage.getItem("g2048_best") || 0);
+    bestEl.textContent = best;
+
+    function init() {
+      grid = Array.from({ length: 4 }, () => Array(4).fill(0));
+      score = 0;
+      const ov = document.getElementById("overlay");
+      if (ov) ov.style.display = "none";
+      addTile(); addTile();
+      render();
+    }
+
+    function addTile() {
+      const empty = [];
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (!grid[r][c]) empty.push([r, c]);
+      if (!empty.length) return;
+      const [r, c] = empty[(Math.random() * empty.length) | 0];
+      grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+    }
+
+    function render() {
+      boardEl.innerHTML = "";
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+        const v = grid[r][c];
+        const div = document.createElement("div");
+        div.className = "tile" + (v ? " t" + v : "");
+        div.textContent = v || "";
+        boardEl.appendChild(div);
+      }
+      scoreEl.textContent = score;
+      if (score > best) { best = score; localStorage.setItem("g2048_best", best); bestEl.textContent = best; }
+    }
+
+    function slide(row) {
+      let arr = row.filter(v => v);
+      for (let i = 0; i < arr.length - 1; i++) {
+        if (arr[i] === arr[i + 1]) { arr[i] *= 2; score += arr[i]; arr[i + 1] = 0; }
+      }
+      arr = arr.filter(v => v);
+      while (arr.length < 4) arr.push(0);
+      return arr;
+    }
+
+    function rotate(g) {
+      const n = Array.from({ length: 4 }, () => Array(4).fill(0));
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) n[c][3 - r] = g[r][c];
+      return n;
+    }
+
+    function move(dir) {
+      const before = JSON.stringify(grid);
+      // dir: 0=left,1=up,2=right,3=down -> rotate so we always slide left
+      for (let i = 0; i < dir; i++) grid = rotate(grid);
+      const scoreBefore = score;
+      grid = grid.map(slide);
+      for (let i = 0; i < (4 - dir) % 4; i++) grid = rotate(grid);
+
+      if (JSON.stringify(grid) !== before) {
+        if (score > scoreBefore) SFX.match(); else SFX.click();
+        addTile(); render();
+        if (isGameOver()) {
+          SFX.die();
+          document.getElementById("ovText").textContent = "Punkte: " + score + " · Bestwert: " + best;
+          document.getElementById("overlay").style.display = "block";
+        }
+      }
+    }
+
+    function isGameOver() {
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+        if (!grid[r][c]) return false;
+        if (c < 3 && grid[r][c] === grid[r][c + 1]) return false;
+        if (r < 3 && grid[r][c] === grid[r + 1][c]) return false;
+      }
+      return true;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      const k = e.key.toLowerCase();
+      if (k === "arrowleft" || k === "a") { move(0); e.preventDefault(); }
+      else if (k === "arrowup" || k === "w") { move(1); e.preventDefault(); }
+      else if (k === "arrowright" || k === "d") { move(2); e.preventDefault(); }
+      else if (k === "arrowdown" || k === "s") { move(3); e.preventDefault(); }
+    });
+
+    let tStart = null;
+    boardEl.addEventListener("touchstart", (e) => {
+      tStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }, { passive: true });
+    boardEl.addEventListener("touchend", (e) => {
+      if (!tStart) return;
+      const dx = e.changedTouches[0].clientX - tStart.x;
+      const dy = e.changedTouches[0].clientY - tStart.y;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) { tStart = null; return; }
+      if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 2 : 0);
+      else move(dy > 0 ? 3 : 1);
+      tStart = null;
+    });
+
+    document.getElementById("restart").addEventListener("click", init);
+    init();
+  </script>
+</body>
+</html>

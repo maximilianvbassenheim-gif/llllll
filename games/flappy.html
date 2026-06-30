@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flappy – Pixel Arcade</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div class="container game-shell">
+    <div class="topbar">
+      <a class="btn secondary" href="../index.html">← Arcade</a>
+      <h2>🐦 Flappy</h2>
+      <button class="btn" id="restart">Neu starten</button>
+    </div>
+
+    <div class="hud">
+      <div>Punkte: <b id="score">0</b></div>
+      <div>Bestwert: <b id="best">0</b></div>
+    </div>
+
+    <canvas id="game" width="400" height="500"></canvas>
+    <p class="controls-hint">Klick, Leertaste oder Tippen, um zu fliegen.</p>
+
+    <div class="ad-slot"></div>
+  </div>
+
+  <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+
+    const GRAV = 0.45, FLAP = -7.5, GAP = 140, PIPE_W = 60, SPEED = 2.4;
+    let bird, pipes, score, running, started, frame;
+    let best = +(localStorage.getItem("flappy_best") || 0);
+    bestEl.textContent = best;
+
+    function reset() {
+      bird = { x: 90, y: H / 2, r: 12, v: 0 };
+      pipes = [];
+      score = 0; running = true; started = false; frame = 0;
+      scoreEl.textContent = 0;
+    }
+
+    function flap() {
+      if (!running) { reset(); return; }
+      started = true;
+      bird.v = FLAP;
+      SFX.click();
+    }
+
+    function spawnPipe() {
+      const min = 60, max = H - GAP - 60;
+      const top = min + Math.random() * (max - min);
+      pipes.push({ x: W, top, passed: false });
+    }
+
+    function step() {
+      const wasRunning = running;
+      ctx.fillStyle = "#0a0b16";
+      ctx.fillRect(0, 0, W, H);
+
+      if (started && running) {
+        bird.v += GRAV;
+        bird.y += bird.v;
+        frame++;
+        if (frame % 95 === 0) spawnPipe();
+      }
+
+      // pipes
+      for (const p of pipes) {
+        if (started && running) p.x -= SPEED;
+        ctx.fillStyle = "#2ecc71";
+        ctx.fillRect(p.x, 0, PIPE_W, p.top);
+        ctx.fillRect(p.x, p.top + GAP, PIPE_W, H - p.top - GAP);
+
+        if (!p.passed && p.x + PIPE_W < bird.x) {
+          p.passed = true; score++; scoreEl.textContent = score; SFX.score();
+        }
+        // collision
+        if (bird.x + bird.r > p.x && bird.x - bird.r < p.x + PIPE_W &&
+            (bird.y - bird.r < p.top || bird.y + bird.r > p.top + GAP)) {
+          running = false;
+        }
+      }
+      pipes = pipes.filter(p => p.x + PIPE_W > 0);
+
+      if (bird.y + bird.r > H || bird.y - bird.r < 0) running = false;
+
+      if (wasRunning && !running) SFX.die();
+
+      // bird
+      ctx.beginPath();
+      ctx.fillStyle = "#f1c40f";
+      ctx.arc(bird.x, bird.y, bird.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = "#222";
+      ctx.arc(bird.x + 4, bird.y - 3, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (!started && running) {
+        ctx.fillStyle = "#eef0ff";
+        ctx.textAlign = "center";
+        ctx.font = "18px sans-serif";
+        ctx.fillText("Tippen / Klicken zum Starten", W / 2, H / 2 + 60);
+      }
+
+      if (!running) {
+        if (score > best) { best = score; localStorage.setItem("flappy_best", best); bestEl.textContent = best; }
+        ctx.fillStyle = "rgba(0,0,0,.6)";
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.font = "bold 28px sans-serif";
+        ctx.fillText("Game Over", W / 2, H / 2 - 10);
+        ctx.font = "16px sans-serif";
+        ctx.fillText("Punkte: " + score + " · klick für neu", W / 2, H / 2 + 20);
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    canvas.addEventListener("mousedown", flap);
+    canvas.addEventListener("touchstart", (e) => { flap(); e.preventDefault(); }, { passive: false });
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") { flap(); e.preventDefault(); }
+    });
+    document.getElementById("restart").addEventListener("click", reset);
+
+    reset();
+    step();
+  </script>
+</body>
+</html>

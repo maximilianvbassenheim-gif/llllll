@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan zur Weltherrschaft – Pixel Arcade</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .lab {
+      max-width: 880px; margin: 0 auto; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 18px;
+    }
+    @media (max-width: 760px) { .lab { grid-template-columns: 1fr; } }
+
+    .brain-panel {
+      background: linear-gradient(160deg, var(--panel), var(--bg-2));
+      border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
+      padding: 24px; text-align: center; box-shadow: var(--shadow);
+    }
+    .brain {
+      font-size: 6rem; cursor: pointer; user-select: none;
+      transition: transform .05s ease; display: inline-block;
+      filter: drop-shadow(0 6px 18px rgba(108,92,231,.5));
+    }
+    .brain:active { transform: scale(.9); }
+    .speech {
+      min-height: 44px; margin: 12px auto 0; max-width: 320px;
+      font-style: italic; color: var(--accent-2); font-size: .95rem;
+    }
+    .stats { font-size: 1.02rem; line-height: 1.8; margin-top: 8px; }
+    .stats b { color: var(--accent-2); }
+    .mult { color: var(--good) !important; }
+
+    .shop { text-align: left; }
+    .shop h3 { margin-bottom: 12px; }
+    .tabs { display:flex; gap:8px; margin-bottom:12px; }
+    .tabs button {
+      flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      color:var(--text); padding:8px; border-radius:8px; cursor:pointer; font-weight:600;
+    }
+    .tabs button.active { background:var(--accent); border-color:var(--accent); }
+    .upgrade {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px; padding: 11px 13px; margin-bottom: 9px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      cursor: pointer; transition: border-color .15s ease, opacity .15s ease;
+    }
+    .upgrade:hover { border-color: var(--accent); }
+    .upgrade.locked { opacity: .4; cursor: not-allowed; }
+    .upgrade .info small { color: var(--muted); display: block; font-size: .78rem; }
+    .upgrade .cost { white-space: nowrap; font-weight: 700; color: var(--warn); }
+    .upgrade .owned { color: var(--good); font-size: .82rem; }
+
+    .progress-wrap { margin: 18px auto; max-width: 880px; }
+    .bar { height: 22px; background: #181a2e; border-radius: 11px; overflow: hidden; }
+    .bar > div {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .3s ease;
+    }
+    .win {
+      max-width: 880px; margin: 18px auto; padding: 18px;
+      background: linear-gradient(160deg, #2d1b4e, #1a1c33);
+      border: 1px solid var(--accent); border-radius: 14px; text-align: center;
+      display: none;
+    }
+    .win.show { display: block; }
+
+    .ach-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:880px; margin:18px auto; }
+    .ach {
+      font-size:1.6rem; width:48px; height:48px; display:flex; align-items:center;
+      justify-content:center; border-radius:10px; background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08); filter:grayscale(1) opacity(.35);
+      transition: filter .3s ease, transform .2s ease; cursor:default;
+    }
+    .ach.got { filter:none; transform:scale(1.05); border-color:var(--good); }
+
+    #golden {
+      position:fixed; font-size:2.4rem; cursor:pointer; z-index:50;
+      display:none; user-select:none; filter:drop-shadow(0 0 12px gold);
+      animation: float 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes float { from{transform:translateY(0)} to{transform:translateY(-12px)} }
+
+    .float-num {
+      position:fixed; pointer-events:none; color:var(--accent-2); font-weight:700;
+      font-size:1.1rem; z-index:40; animation: rise 1s ease-out forwards;
+    }
+    @keyframes rise { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-50px)} }
+
+    .toast {
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:var(--accent); color:#fff; padding:12px 18px; border-radius:10px;
+      box-shadow:var(--shadow); z-index:60; opacity:0; transition:opacity .3s ease;
+      font-weight:600; text-align:center;
+    }
+    .toast.show { opacity:1; }
+    .btn.prestige { background: linear-gradient(90deg,#f1c40f,#e84393); }
+  </style>
+</head>
+<body>
+  <div class="container game-shell">
+    <div class="topbar">
+      <a class="btn secondary" href="../index.html">← Arcade</a>
+      <h2>🧠 Plan zur Weltherrschaft</h2>
+      <button class="btn secondary" id="reset">Reset</button>
+    </div>
+    <p class="controls-hint" style="margin-bottom:18px;">
+      „Was machen wir heute Nacht, Brain?" – „Dasselbe wie jede Nacht, Pinky:
+      Klick auf das Gehirn und erobere die Welt!"
+    </p>
+
+    <div class="ad-slot"></div>
+
+    <div class="lab">
+      <div class="brain-panel">
+        <div class="brain" id="brain" title="Klick mich!">🧠</div>
+        <div class="speech" id="speech">Narf! Klick auf das Gehirn.</div>
+        <div class="stats">
+          💡 Ideen: <b id="ideas">0</b><br />
+          💶 Geld: <b id="money">0 €</b><br />
+          ⚙️ pro Sekunde: <b id="perSec">0</b><br />
+          👆 pro Klick: <b id="perClick">1</b><br />
+          🧬 Hirnzellen: <b id="cells" class="mult">0</b> (×<b id="multTxt" class="mult">1.00</b>)
+        </div>
+        <button class="btn prestige" id="prestige" style="margin-top:14px; display:none;">
+          🌍 Welt neu erobern (+<span id="prestigeGain">0</span> 🧬)
+        </button>
+      </div>
+
+      <div class="brain-panel shop">
+        <h3>🗂️ Geniale Pläne</h3>
+        <div class="tabs">
+          <button class="active" data-tab="plans">Pläne</button>
+          <button data-tab="upgrades">Upgrades</button>
+        </div>
+        <div id="shop"></div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <p style="text-align:center;color:var(--muted);margin-bottom:8px;">
+        Fortschritt zur Weltherrschaft: <b id="pct">0%</b> (Ziel: 1.000.000 €)
+      </p>
+      <div class="bar"><div id="barfill"></div></div>
+    </div>
+
+    <div class="win" id="win">
+      <h2>🌍 WELTHERRSCHAFT ERREICHT! 🌍</h2>
+      <p style="margin-top:10px;">Brain: „Endlich, Pinky. Die Welt gehört uns – und eine Million dazu!"</p>
+      <p style="margin-top:6px;color:var(--muted);">Tipp: Erobere die Welt neu für permanente Hirnzellen-Boni. 🧬</p>
+    </div>
+
+    <h3 style="text-align:center;margin-top:24px;">🏆 Erfolge</h3>
+    <div class="ach-grid" id="achGrid"></div>
+  </div>
+
+  <div id="golden" title="Goldene Idee! Schnell klicken!">💡</div>
+
+  <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
+  <script>
+    const SPEECHES = [
+      "Narf!", "Zort!", "Egad!", "Poit!", "Troz!",
+      "Genial, Brain!", "Bist du dir sicher, Pinky?",
+      "Wir brauchen mehr Ideen!", "Heute Nacht erobern wir die Welt!",
+      "Pinky, konzentrier dich!", "Aber natürlich, Brain!"
+    ];
+
+    const PLANS = [
+      { id:"pinky",   name:"Pinky anheuern",       desc:"+1 Idee/Sek",     base:15,     rate:1 },
+      { id:"labor",   name:"Geheimlabor ausbauen", desc:"+6 Ideen/Sek",    base:120,    rate:6 },
+      { id:"roboter", name:"Roboter-Armee",        desc:"+30 Ideen/Sek",   base:800,    rate:30 },
+      { id:"satellit",name:"Hypno-Satellit",       desc:"+140 Ideen/Sek",  base:5000,   rate:140 },
+      { id:"tv",      name:"TV-Sender übernehmen", desc:"+700 Ideen/Sek",  base:30000,  rate:700 },
+      { id:"rakete",  name:"Mond-Rakete",          desc:"+4500 Ideen/Sek", base:180000, rate:4500 },
+      { id:"zeit",    name:"Zeitmaschine",         desc:"+30k Ideen/Sek",  base:1.2e6,  rate:30000 },
+      { id:"klon",    name:"Brain-Klonarmee",      desc:"+220k Ideen/Sek", base:1e7,    rate:220000 },
+    ];
+
+    const UPGRADES = [
+      { id:"kaffee",  name:"Kaffee für Brain",   desc:"+4 pro Klick",          cost:50,     perClick:4 },
+      { id:"maus",    name:"Goldene Maus",       desc:"+25 pro Klick",         cost:1500,   perClick:25 },
+      { id:"hypno",   name:"Hypno-Handschuh",    desc:"+150 pro Klick",        cost:40000,  perClick:150 },
+      { id:"auto1",   name:"Auto-Pinky",         desc:"Klickt 1×/Sek von selbst", cost:5000, auto:1 },
+      { id:"auto2",   name:"Auto-Pinky-Trupp",   desc:"Klickt 5×/Sek von selbst", cost:120000, auto:5 },
+      { id:"boost",   name:"Genie-Serum",        desc:"+100% Produktion (×2)", cost:500000, prodMult:2 },
+    ];
+
+    const ACHS = [
+      { id:"click1",   icon:"👆", name:"Erster Klick",        test:s=>s.totalClicks>=1 },
+      { id:"ideas100", icon:"💡", name:"100 Ideen",           test:s=>s.lifetimeIdeas>=100 },
+      { id:"plan1",    icon:"🗂️", name:"Erster Plan",          test:s=>plansOwned()>=1 },
+      { id:"perSec100",icon:"⚙️", name:"100 Ideen/Sek",       test:s=>perSec()>=100 },
+      { id:"money1k",  icon:"💶", name:"1.000 €",             test:s=>s.money>=1000 },
+      { id:"golden1",  icon:"🌟", name:"Goldene Idee gefangen",test:s=>s.goldenCaught>=1 },
+      { id:"auto",     icon:"🤖", name:"Automatisierung",     test:s=>UPGRADES.find(u=>u.id==="auto1").owned>=1 },
+      { id:"world",    icon:"🌍", name:"Weltherrschaft",      test:s=>s.lifetimeMoney>=1e6 },
+      { id:"prestige1",icon:"🧬", name:"Neustart der Welt",   test:s=>s.cells>=1 },
+      { id:"million",  icon:"💎", name:"Millionär",           test:s=>s.money>=1e6 },
+    ];
+
+    const GOAL = 1000000;
+    let activeTab = "plans";
+
+    let state = {
+      ideas:0, money:0, perClick:1, cells:0,
+      totalClicks:0, lifetimeIdeas:0, lifetimeMoney:0, goldenCaught:0,
+      plans:{}, upgrades:{}, achs:{}
+    };
+
+    function plansOwned(){ return PLANS.reduce((s,p)=>s+(p.owned||0),0); }
+    function multiplier(){
+      let m = 1 + state.cells * 0.1;
+      UPGRADES.forEach(u=>{ if(u.prodMult && u.owned) m *= Math.pow(u.prodMult, u.owned); });
+      return m;
+    }
+    function perSec(){ return PLANS.reduce((s,p)=>s+p.rate*(p.owned||0),0) * multiplier(); }
+    function autoClicks(){ return UPGRADES.reduce((s,u)=>s+(u.auto||0)*(u.owned||0),0); }
+    function costOf(item){
+      const owned = item.owned || 0;
+      return Math.floor(item.base ? item.base*Math.pow(1.15,owned) : item.cost*Math.pow(1.6,owned));
+    }
+    function prestigeGain(){ return Math.floor(Math.sqrt(state.lifetimeMoney / 1e6)); }
+
+    function load(){
+      const s = localStorage.getItem("weltherrschaft2");
+      if(s){ try{ Object.assign(state, JSON.parse(s)); }catch(e){} }
+      PLANS.forEach(p=>p.owned = (state.plans||{})[p.id]||0);
+      UPGRADES.forEach(u=>u.owned = (state.upgrades||{})[u.id]||0);
+      recalcPerClick();
+    }
+    function save(){
+      state.plans={}; PLANS.forEach(p=>state.plans[p.id]=p.owned);
+      state.upgrades={}; UPGRADES.forEach(u=>state.upgrades[u.id]=u.owned);
+      localStorage.setItem("weltherrschaft2", JSON.stringify(state));
+    }
+
+    function recalcPerClick(){
+      state.perClick = 1 + UPGRADES.reduce((s,u)=>s+(u.perClick||0)*(u.owned||0),0);
+    }
+
+    function fmt(n){
+      n = Math.floor(n);
+      if(n>=1e12) return (n/1e12).toFixed(2)+" Bio";
+      if(n>=1e9)  return (n/1e9).toFixed(2)+" Mrd";
+      if(n>=1e6)  return (n/1e6).toFixed(2)+" Mio";
+      if(n>=1e3)  return (n/1e3).toFixed(1)+"k";
+      return n.toString();
+    }
+    function say(t){ document.getElementById("speech").textContent = t; }
+    function randSpeech(){ return SPEECHES[(Math.random()*SPEECHES.length)|0]; }
+
+    function toast(msg){
+      const t=document.createElement("div"); t.className="toast"; t.textContent=msg;
+      document.body.appendChild(t);
+      requestAnimationFrame(()=>t.classList.add("show"));
+      setTimeout(()=>{ t.classList.remove("show"); setTimeout(()=>t.remove(),300); },2200);
+    }
+
+    function gainIdeas(n){
+      state.ideas += n; state.money += n;
+      state.lifetimeIdeas += n; state.lifetimeMoney += n;
+    }
+
+    function render(){
+      document.getElementById("ideas").textContent = fmt(state.ideas);
+      document.getElementById("money").textContent = fmt(state.money)+" €";
+      document.getElementById("perSec").textContent = fmt(perSec());
+      document.getElementById("perClick").textContent = fmt(state.perClick * multiplier());
+      document.getElementById("cells").textContent = state.cells;
+      document.getElementById("multTxt").textContent = multiplier().toFixed(2);
+
+      const pct = Math.min(100,(state.money/GOAL)*100);
+      document.getElementById("pct").textContent = pct.toFixed(1)+"%";
+      document.getElementById("barfill").style.width = pct+"%";
+      if(state.money>=GOAL || state.lifetimeMoney>=GOAL) document.getElementById("win").classList.add("show");
+
+      const pg = prestigeGain();
+      const pBtn = document.getElementById("prestige");
+      pBtn.style.display = pg>0 ? "inline-block" : "none";
+      document.getElementById("prestigeGain").textContent = pg;
+
+      renderShop();
+      renderAchs();
+    }
+
+    function renderShop(){
+      const shop=document.getElementById("shop"); shop.innerHTML="";
+      const list = activeTab==="plans" ? PLANS : UPGRADES;
+      list.forEach(item=>{
+        const cost=costOf(item);
+        const isUpgradeOnce = activeTab==="upgrades";
+        const afford = state.ideas>=cost;
+        const el=document.createElement("div");
+        el.className="upgrade"+(afford?"":" locked");
+        el.innerHTML =
+          '<div class="info"><strong>'+item.name+'</strong>'+
+          '<small>'+item.desc+'</small>'+
+          '<span class="owned">im Besitz: '+(item.owned||0)+'</span></div>'+
+          '<div class="cost">'+fmt(cost)+' 💡</div>';
+        el.addEventListener("click",()=>buy(item));
+        shop.appendChild(el);
+      });
+    }
+
+    function renderAchs(){
+      const grid=document.getElementById("achGrid"); grid.innerHTML="";
+      ACHS.forEach(a=>{
+        const el=document.createElement("div");
+        el.className="ach"+(state.achs[a.id]?" got":"");
+        el.textContent=a.icon; el.title=a.name+(state.achs[a.id]?" ✓":" (gesperrt)");
+        grid.appendChild(el);
+      });
+    }
+
+    function checkAchs(){
+      ACHS.forEach(a=>{
+        if(!state.achs[a.id] && a.test(state)){
+          state.achs[a.id]=true;
+          toast("🏆 Erfolg: "+a.name);
+          if(window.SFX) SFX.ach();
+        }
+      });
+    }
+
+    function buy(item){
+      const cost=costOf(item);
+      if(state.ideas<cost){ say("Nicht genug Ideen, Pinky!"); return; }
+      state.ideas-=cost;
+      item.owned=(item.owned||0)+1;
+      recalcPerClick();
+      say(randSpeech());
+      if(window.SFX) SFX.buy();
+      save(); render();
+    }
+
+    function floatNum(x,y,txt){
+      const f=document.createElement("div"); f.className="float-num"; f.textContent=txt;
+      f.style.left=x+"px"; f.style.top=y+"px";
+      document.body.appendChild(f);
+      setTimeout(()=>f.remove(),1000);
+    }
+
+    document.getElementById("brain").addEventListener("click",(e)=>{
+      const gain = state.perClick * multiplier();
+      gainIdeas(gain);
+      state.totalClicks++;
+      floatNum(e.clientX, e.clientY, "+"+fmt(gain));
+      if(window.SFX) SFX.click();
+      if(Math.random()<0.15) say(randSpeech());
+      checkAchs(); render();
+    });
+
+    // Tabs
+    document.querySelectorAll(".tabs button").forEach(b=>{
+      b.addEventListener("click",()=>{
+        activeTab=b.dataset.tab;
+        document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));
+        renderShop();
+      });
+    });
+
+    // Prestige
+    document.getElementById("prestige").addEventListener("click",()=>{
+      const pg=prestigeGain();
+      if(pg<1) return;
+      if(!confirm("Welt neu erobern? Du verlierst Ideen, Geld und Pläne, erhältst aber "+pg+" Hirnzellen (+"+(pg*10)+"% Produktion dauerhaft).")) return;
+      state.cells += pg;
+      state.ideas=0; state.money=0; state.perClick=1;
+      PLANS.forEach(p=>p.owned=0);
+      UPGRADES.forEach(u=>u.owned=0);
+      recalcPerClick();
+      document.getElementById("win").classList.remove("show");
+      say("Brain: Diesmal schaffen wir es wirklich, Pinky!");
+      toast("🧬 +"+pg+" Hirnzellen!");
+      if(window.SFX) SFX.win();
+      checkAchs(); save(); render();
+    });
+
+    document.getElementById("reset").addEventListener("click",()=>{
+      if(!confirm("Wirklich ALLES (auch Hirnzellen & Erfolge) zurücksetzen?")) return;
+      localStorage.removeItem("weltherrschaft2");
+      location.reload();
+    });
+
+    // Golden idea: erscheint zufällig, gibt Bonus
+    const golden=document.getElementById("golden");
+    function spawnGolden(){
+      golden.style.left=(20+Math.random()*70)+"vw";
+      golden.style.top=(25+Math.random()*55)+"vh";
+      golden.style.display="block";
+      setTimeout(()=>{ golden.style.display="none"; }, 5000);
+    }
+    golden.addEventListener("click",(e)=>{
+      golden.style.display="none";
+      const bonus = Math.max(50, perSec()*30 + state.perClick*multiplier()*50);
+      gainIdeas(bonus);
+      state.goldenCaught++;
+      floatNum(e.clientX,e.clientY,"🌟 +"+fmt(bonus));
+      toast("🌟 Goldene Idee! +"+fmt(bonus)+" Ideen");
+      if(window.SFX) SFX.score();
+      checkAchs(); render();
+    });
+    setInterval(()=>{ if(Math.random()<0.5) spawnGolden(); }, 30000);
+
+    // Idle + Auto-Klick Tick (10×/Sek)
+    setInterval(()=>{
+      const idle = perSec()/10;
+      const auto = (autoClicks() * state.perClick * multiplier())/10;
+      const gain = idle+auto;
+      if(gain>0){ gainIdeas(gain); checkAchs(); render(); }
+    },100);
+
+    setInterval(save,5000);
+
+    load();
+    render();
+  </script>
+</body>
+</html>

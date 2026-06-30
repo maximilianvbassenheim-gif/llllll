@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brain-Memory – Pixel Arcade</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .board {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+      max-width:400px; margin:0 auto; touch-action:manipulation;
+    }
+    .card3d { aspect-ratio:1; perspective:600px; }
+    .inner {
+      position:relative; width:100%; height:100%; cursor:pointer;
+      transform-style:preserve-3d; transition:transform .4s ease;
+    }
+    .card3d.flipped .inner, .card3d.matched .inner { transform:rotateY(180deg); }
+    .face {
+      position:absolute; inset:0; backface-visibility:hidden;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:12px; font-size:2.2rem; box-shadow:var(--shadow);
+    }
+    .front { background:linear-gradient(160deg,var(--accent),var(--accent-2)); }
+    .back {
+      background:#181a2e; border:1px solid rgba(255,255,255,.08);
+      transform:rotateY(180deg);
+    }
+    .card3d.matched .back { border-color:var(--good); opacity:.7; }
+    .overlay {
+      max-width:400px; margin:16px auto; padding:18px; text-align:center;
+      background:linear-gradient(160deg,var(--panel),var(--bg-2));
+      border:1px solid var(--accent); border-radius:14px; display:none;
+    }
+    .overlay.show { display:block; }
+  </style>
+</head>
+<body>
+  <div class="container game-shell">
+    <div class="topbar">
+      <a class="btn secondary" href="../index.html">← Arcade</a>
+      <h2>🧠 Brain-Memory</h2>
+      <button class="btn" id="restart">Neu</button>
+    </div>
+
+    <div class="hud">
+      <div>Züge: <b id="moves">0</b></div>
+      <div>Paare: <b id="pairs">0</b>/8</div>
+      <div>Bestzüge: <b id="best">–</b></div>
+    </div>
+    <p class="controls-hint">Finde alle Paare mit möglichst wenig Zügen.</p>
+
+    <div class="ad-slot"></div>
+
+    <div class="board" id="board"></div>
+
+    <div class="overlay" id="overlay">
+      <h2>Geschafft! 🎉</h2>
+      <p id="ovText" style="margin:10px 0;color:var(--muted);"></p>
+    </div>
+  </div>
+
+  <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
+  <script>
+    const ICONS=["🧠","🐭","🧀","🔬","🚀","🌍","💡","🔨"];
+    const boardEl=document.getElementById("board");
+    const movesEl=document.getElementById("moves");
+    const pairsEl=document.getElementById("pairs");
+    const bestEl=document.getElementById("best");
+    const overlay=document.getElementById("overlay");
+    let deck=[], first=null, lock=false, moves=0, pairs=0;
+    let best=localStorage.getItem("memory_best");
+    bestEl.textContent = best ? best : "–";
+
+    function shuffle(a){
+      for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; }
+      return a;
+    }
+
+    function init(){
+      deck=shuffle([...ICONS,...ICONS]);
+      first=null; lock=false; moves=0; pairs=0;
+      movesEl.textContent=0; pairsEl.textContent=0;
+      overlay.classList.remove("show");
+      boardEl.innerHTML="";
+      deck.forEach((icon,idx)=>{
+        const c=document.createElement("div");
+        c.className="card3d"; c.dataset.icon=icon; c.dataset.idx=idx;
+        c.innerHTML='<div class="inner"><div class="face front">❓</div>'+
+                    '<div class="face back">'+icon+'</div></div>';
+        c.addEventListener("click",()=>flip(c));
+        boardEl.appendChild(c);
+      });
+    }
+
+    function flip(c){
+      if(lock || c.classList.contains("flipped") || c.classList.contains("matched")) return;
+      c.classList.add("flipped");
+      if(!first){ first=c; SFX.click(); return; }
+      moves++; movesEl.textContent=moves;
+      if(first.dataset.icon===c.dataset.icon){
+        first.classList.add("matched"); c.classList.add("matched");
+        first=null; pairs++; pairsEl.textContent=pairs;
+        SFX.match();
+        if(pairs===ICONS.length) win();
+      } else {
+        lock=true;
+        const a=first; first=null;
+        setTimeout(()=>{ a.classList.remove("flipped"); c.classList.remove("flipped"); lock=false; },800);
+      }
+    }
+
+    function win(){
+      SFX.win();
+      if(!best || moves<+best){ best=moves; localStorage.setItem("memory_best",best); bestEl.textContent=best; }
+      document.getElementById("ovText").textContent="In "+moves+" Zügen gelöst! Bestwert: "+best;
+      overlay.classList.add("show");
+    }
+
+    document.getElementById("restart").addEventListener("click",init);
+    init();
+  </script>
+</body>
+</html>
