@@ -61,6 +61,7 @@
   </div>
 
   <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
   <script>
     const ICONS=["🧠","🐭","🧀","🔬","🚀","🌍","💡","🔨"];
     const boardEl=document.getElementById("board");
@@ -96,11 +97,12 @@
     function flip(c){
       if(lock || c.classList.contains("flipped") || c.classList.contains("matched")) return;
       c.classList.add("flipped");
-      if(!first){ first=c; return; }
+      if(!first){ first=c; SFX.click(); return; }
       moves++; movesEl.textContent=moves;
       if(first.dataset.icon===c.dataset.icon){
         first.classList.add("matched"); c.classList.add("matched");
         first=null; pairs++; pairsEl.textContent=pairs;
+        SFX.match();
         if(pairs===ICONS.length) win();
       } else {
         lock=true;
@@ -110,6 +112,7 @@
     }
 
     function win(){
+      SFX.win();
       if(!best || moves<+best){ best=moves; localStorage.setItem("memory_best",best); bestEl.textContent=best; }
       document.getElementById("ovText").textContent="In "+moves+" Zügen gelöst! Bestwert: "+best;
       overlay.classList.add("show");

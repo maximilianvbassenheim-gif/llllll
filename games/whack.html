@@ -58,6 +58,7 @@
   </div>
 
   <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
   <script>
     const holesEl=document.getElementById("holes");
     const scoreEl=document.getElementById("score");
@@ -100,8 +101,8 @@
       if(!running || !h.up) return;
       h.el.classList.add("bonk");
       setTimeout(()=>h.el.classList.remove("bonk"),120);
-      if(h.type==="pinky"){ score+=1; }
-      else { score=Math.max(0,score-2); }
+      if(h.type==="pinky"){ score+=1; SFX.hit(); }
+      else { score=Math.max(0,score-2); SFX.die(); }
       h.up=false; h.el.classList.remove("up");
       scoreEl.textContent=score;
     }
@@ -125,6 +126,7 @@
       running=false;
       clearTimeout(popTimer); clearInterval(tickTimer);
       holes.forEach(h=>{ h.up=false; h.el.classList.remove("up"); });
+      SFX.win();
       if(score>best){ best=score; localStorage.setItem("whack_best",best); bestEl.textContent=best; }
       document.getElementById("ovTitle").textContent="Zeit um! 🔨";
       document.getElementById("ovText").textContent="Punkte: "+score+" · Bestwert: "+best;

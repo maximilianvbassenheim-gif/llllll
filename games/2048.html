@@ -42,10 +42,17 @@
     <div class="board" id="board"></div>
     <p class="controls-hint">Pfeiltasten / WASD oder wischen auf dem Handy.</p>
 
+    <div class="overlay" id="overlay" style="max-width:340px;margin:16px auto;padding:18px;text-align:center;background:linear-gradient(160deg,var(--panel),var(--bg-2));border:1px solid var(--accent);border-radius:14px;display:none;">
+      <h2>Game Over</h2>
+      <p id="ovText" style="margin:10px 0;color:var(--muted);"></p>
+      <button class="btn" onclick="init()">Nochmal</button>
+    </div>
+
     <div class="ad-slot"></div>
   </div>
 
   <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
   <script>
     const boardEl = document.getElementById("board");
     const scoreEl = document.getElementById("score");
@@ -56,6 +63,8 @@
     function init() {
       grid = Array.from({ length: 4 }, () => Array(4).fill(0));
       score = 0;
+      const ov = document.getElementById("overlay");
+      if (ov) ov.style.display = "none";
       addTile(); addTile();
       render();
     }
@@ -101,12 +110,18 @@
       const before = JSON.stringify(grid);
       // dir: 0=left,1=up,2=right,3=down -> rotate so we always slide left
       for (let i = 0; i < dir; i++) grid = rotate(grid);
+      const scoreBefore = score;
       grid = grid.map(slide);
       for (let i = 0; i < (4 - dir) % 4; i++) grid = rotate(grid);
 
       if (JSON.stringify(grid) !== before) {
+        if (score > scoreBefore) SFX.match(); else SFX.click();
         addTile(); render();
-        if (isGameOver()) setTimeout(() => alert("Game Over! Punkte: " + score), 50);
+        if (isGameOver()) {
+          SFX.die();
+          document.getElementById("ovText").textContent = "Punkte: " + score + " · Bestwert: " + best;
+          document.getElementById("overlay").style.display = "block";
+        }
       }
     }
 

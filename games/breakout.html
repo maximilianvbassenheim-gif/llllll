@@ -27,6 +27,7 @@
   </div>
 
   <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
@@ -101,6 +102,7 @@
         if (!b.alive) continue;
         if (ball.x > b.x && ball.x < b.x + b.w && ball.y > b.y && ball.y < b.y + b.h) {
           b.alive = false; score += 10; updateHud();
+          SFX.hit();
           ball.vy *= -1;
           break;
         }
@@ -111,8 +113,8 @@
       // Ball lost
       if (ball.y > H) {
         lives--; updateHud();
-        if (lives <= 0) { running = false; }
-        else resetBall();
+        if (lives <= 0) { running = false; SFX.die(); }
+        else { SFX.score(); resetBall(); }
       }
 
       draw();

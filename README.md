@@ -9,6 +9,7 @@ Frameworks, keine Build-Tools, läuft auf jedem statischen Hosting.
 ├── index.html          # Arcade-Hub
 ├── css/style.css       # Styling
 ├── js/ads.js           # Monetarisierungs-Layer (Werbeplätze)
+├── js/sfx.js           # Sound-Engine (Web Audio) + Mute-Button
 └── games/
     ├── weltherrschaft.html  # 🧠🐭 Pinky & Brain – Idle-Clicker (Prestige, Erfolge, Upgrades)
     ├── whack.html           # 🔨 Whack-a-Pinky

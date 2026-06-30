@@ -26,6 +26,7 @@
   </div>
 
   <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
@@ -71,6 +72,7 @@
       if (head.x === food.x && head.y === food.y) {
         score += 10;
         scoreEl.textContent = score;
+        SFX.eat();
         placeFood();
         if (tickMs > 60) { tickMs -= 3; clearInterval(loop); loop = setInterval(tick, tickMs); }
       } else {
@@ -95,6 +97,7 @@
     function gameOver() {
       alive = false;
       clearInterval(loop);
+      SFX.die();
       if (score > best) { best = score; localStorage.setItem("snake_best", best); bestEl.textContent = best; }
       ctx.fillStyle = "rgba(0,0,0,.6)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);

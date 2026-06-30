@@ -158,6 +158,7 @@
   <div id="golden" title="Goldene Idee! Schnell klicken!">💡</div>
 
   <script src="../js/ads.js"></script>
+  <script src="../js/sfx.js"></script>
   <script>
     const SPEECHES = [
       "Narf!", "Zort!", "Egad!", "Poit!", "Troz!",
@@ -318,6 +319,7 @@
         if(!state.achs[a.id] && a.test(state)){
           state.achs[a.id]=true;
           toast("🏆 Erfolg: "+a.name);
+          if(window.SFX) SFX.ach();
         }
       });
     }
@@ -329,6 +331,7 @@
       item.owned=(item.owned||0)+1;
       recalcPerClick();
       say(randSpeech());
+      if(window.SFX) SFX.buy();
       save(); render();
     }
 
@@ -344,6 +347,7 @@
       gainIdeas(gain);
       state.totalClicks++;
       floatNum(e.clientX, e.clientY, "+"+fmt(gain));
+      if(window.SFX) SFX.click();
       if(Math.random()<0.15) say(randSpeech());
       checkAchs(); render();
     });
@@ -370,6 +374,7 @@
       document.getElementById("win").classList.remove("show");
       say("Brain: Diesmal schaffen wir es wirklich, Pinky!");
       toast("🧬 +"+pg+" Hirnzellen!");
+      if(window.SFX) SFX.win();
       checkAchs(); save(); render();
     });
 
@@ -394,6 +399,7 @@
       state.goldenCaught++;
       floatNum(e.clientX,e.clientY,"🌟 +"+fmt(bonus));
       toast("🌟 Goldene Idee! +"+fmt(bonus)+" Ideen");
+      if(window.SFX) SFX.score();
       checkAchs(); render();
     });
     setInterval(()=>{ if(Math.random()<0.5) spawnGolden(); }, 30000);
