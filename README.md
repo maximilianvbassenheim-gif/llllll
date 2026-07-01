@@ -10,6 +10,7 @@ Frameworks, keine Build-Tools, läuft auf jedem statischen Hosting.
 ├── css/style.css       # Styling
 ├── js/ads.js           # Monetarisierungs-Layer (Werbeplätze)
 ├── js/sfx.js           # Sound-Engine (Web Audio) + Mute-Button
+├── js/store.js         # Verkauf "Pro" für 1,99 € (werbefrei)
 └── games/
     ├── weltherrschaft.html  # 🧠🐭 Pinky & Brain – Idle-Clicker (Prestige, Erfolge, Upgrades)
     ├── whack.html           # 🔨 Whack-a-Pinky
@@ -54,6 +55,21 @@ das hängt komplett von Traffic, Nische und Vermarktung ab.
 
 Diese Sammlung gibt dir aber die **technische Grundlage**, die du dafür
 brauchst. Realistische Wege zu Umsatz:
+
+### 0. Verkauf für 1,99 € (Pro-Version)
+Ein Kauf-Flow ist eingebaut (`js/store.js`): Banner „Pixel Arcade Pro – 1,99 €",
+Käufer spielen **werbefrei** und bekommen ein PRO-Badge. So aktivierst du den
+echten Verkauf (ohne eigenen Server):
+
+1. Bezahl-Link anlegen – am einfachsten **Stripe Payment Link**
+   (https://dashboard.stripe.com/payment-links) oder **Gumroad** – Produkt 1,99 €.
+2. Beim Anbieter die Weiterleitung **nach der Zahlung** auf deine Seite mit
+   `?pro=1` setzen, z. B. `https://DEINNAME.github.io/llllll/?pro=1`.
+3. Diesen Link in `js/store.js` bei `PAYMENT_LINK` eintragen. Fertig.
+
+> ⚠️ Ehrlich: Die Freischaltung läuft clientseitig (localStorage) und ist bei
+> 1,99 € ohne Server bewusst simpel – nicht kopiergeschützt. Für harten Schutz
+> bräuchtest du ein Backend, das Stripe-Webhooks prüft.
 
 ### 1. Werbung (am einfachsten)
 Die Werbeplätze (`.ad-slot`) sind bereits eingebaut. So aktivierst du sie:
