@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAKKER KIDS — Dein Song mit deinem Namen drin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF8F0;
+    --bg-alt: #FFF0E6;
+    --text: #1A1A2E;
+    --text-soft: #4A4A6A;
+    --text-muted: #8888AA;
+
+    --honey: #F5C842;
+    --honey-light: #FFF3CC;
+    --honey-dark: #D4A017;
+    --orange: #E8945A;
+
+    --pink: #FF5FA2;
+    --pink-light: #FFE0EF;
+    --cyan: #00D4FF;
+    --cyan-light: #D0F6FF;
+
+    --purple: #7B2FBE;
+    --purple-light: #EDE0FF;
+    --holo: #00FFA3;
+    --holo-light: #D0FFE8;
+
+    --coral: #FF6B6B;
+    --mint: #A8E6CF;
+    --lemon: #FFEAA7;
+    --sky: #74B9FF;
+
+    --font-display: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+
+    --radius: 20px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--pink);
+    color: white;
+  }
+
+  /* ── FLOATING NOTES ── */
+  .notes-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .note {
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0.08;
+    animation: floatNote linear infinite;
+  }
+
+  @keyframes floatNote {
+    0% { transform: translateY(110vh) rotate(0deg); }
+    100% { transform: translateY(-10vh) rotate(360deg); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 248, 240, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 2px solid rgba(0,0,0,0.04);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--purple), var(--cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-soft);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-pill);
+    transition: all 0.3s;
+  }
+
+  .nav-links a:hover {
+    background: var(--pink-light);
+    color: var(--pink);
+  }
+
+  .nav-cta {
+    background: var(--pink) !important;
+    color: white !important;
+    padding: 0.5rem 1.2rem !important;
+  }
+
+  .nav-cta:hover {
+    background: var(--purple) !important;
+    transform: scale(1.05);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 7rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(245,200,66,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(255,95,162,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 60% 80%, rgba(0,212,255,0.1) 0%, transparent 40%),
+      radial-gradient(circle at 30% 70%, rgba(123,47,190,0.08) 0%, transparent 40%);
+    pointer-events: none;
+    animation: bgShift 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgShift {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(2deg); }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    background: white;
+    border: 2px solid var(--honey);
+    border-radius: var(--radius-pill);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--honey-dark);
+    margin-bottom: 2rem;
+    animation: popIn 0.6s 0.2s both;
+    box-shadow: 0 4px 20px rgba(245,200,66,0.2);
+  }
+
+  .hero-badge .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--holo);
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    animation: popIn 0.6s 0.3s both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 .line1 { color: var(--text); }
+  .hero h1 .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--pink), var(--coral), var(--honey));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero h1 .line3 {
+    display: block;
+    font-size: 0.55em;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-soft);
+    max-width: 36ch;
+    margin-bottom: 2.5rem;
+    animation: popIn 0.6s 0.5s both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-characters {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    animation: popIn 0.6s 0.7s both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-char {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+    cursor: pointer;
+  }
+
+  .hero-char:hover { transform: scale(1.15) rotate(-5deg); }
+  .hero-char:nth-child(1) { background: var(--honey-light); animation: bounce1 3s ease-in-out infinite; }
+  .hero-char:nth-child(2) { background: var(--pink-light); animation: bounce2 3s ease-in-out 0.3s infinite; }
+  .hero-char:nth-child(3) { background: var(--purple-light); animation: bounce3 3s ease-in-out 0.6s infinite; }
+
+  @keyframes bounce1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes bounce2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+  @keyframes bounce3 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: popIn 0.6s 0.9s both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--pink);
+    color: white;
+    box-shadow: 0 6px 25px rgba(255,95,162,0.35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 35px rgba(255,95,162,0.45);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--text);
+    border: 2px solid rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  }
+  .btn-secondary:hover {
+    border-color: var(--cyan);
+    color: var(--purple);
+    transform: translateY(-2px);
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── SECTION HELPERS ── */
+  section { padding: 5rem 2rem; position: relative; z-index: 1; }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--text-soft);
+    max-width: 50ch;
+    margin-bottom: 3rem;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ── CHARACTERS SECTION ── */
+  .characters { background: var(--bg-alt); border-radius: 0; }
+
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .char-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.4s;
+    border: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .char-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+  }
+
+  .char-card:nth-child(1)::before { background: linear-gradient(90deg, var(--honey), var(--orange)); }
+  .char-card:nth-child(2)::before { background: linear-gradient(90deg, var(--pink), var(--cyan)); }
+  .char-card:nth-child(3)::before { background: linear-gradient(90deg, var(--purple), var(--holo)); }
+
+  .char-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 50px rgba(0,0,0,0.08);
+  }
+
+  .char-card:nth-child(1):hover { border-color: var(--honey); }
+  .char-card:nth-child(2):hover { border-color: var(--pink); }
+  .char-card:nth-child(3):hover { border-color: var(--purple); }
+
+  .char-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .char-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .char-card:nth-child(1) h3 { color: var(--honey-dark); }
+  .char-card:nth-child(2) h3 { color: var(--pink); }
+  .char-card:nth-child(3) h3 { color: var(--purple); }
+
+  .char-age {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .char-card p {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .char-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .char-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+  }
+
+  .char-card:nth-child(1) .char-tag { background: var(--honey-light); color: var(--honey-dark); }
+  .char-card:nth-child(2) .char-tag { background: var(--pink-light); color: var(--pink); }
+  .char-card:nth-child(3) .char-tag { background: var(--purple-light); color: var(--purple); }
+
+  /* ── HOW IT WORKS ── */
+  .how {
+    background: white;
+  }
+
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    position: relative;
+  }
+
+  .how-steps::before {
+    content: '';
+    position: absolute;
+    top: 2.5rem;
+    left: 15%;
+    right: 15%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--honey), var(--pink), var(--purple));
+    border-radius: 2px;
+    z-index: 0;
+  }
+
+  .step {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+
+  .step:nth-child(1) .step-icon { background: var(--honey-light); }
+  .step:nth-child(2) .step-icon { background: var(--pink-light); }
+  .step:nth-child(3) .step-icon { background: var(--purple-light); }
+
+  .step h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    max-width: 28ch;
+    margin: 0 auto;
+  }
+
+  /* ── ANLÄSSE ── */
+  .occasions { background: var(--bg); }
+
+  .occasion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .occasion-card {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.3s;
+    border: 2px solid rgba(0,0,0,0.04);
+  }
+
+  .occasion-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    border-color: var(--pink-light);
+  }
+
+  .occasion-emoji {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-alt);
+    border-radius: var(--radius-sm);
+  }
+
+  .occasion-card h3 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .occasion-card p {
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    line-height: 1.5;
+  }
+
+  /* ── TESTIMONIAL ── */
+  .quote-section {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    text-align: center;
+    padding: 5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quote-section::before {
+    content: '♪';
+    position: absolute;
+    font-size: 15rem;
+    opacity: 0.08;
+    top: -2rem;
+    left: 5%;
+    animation: spin 20s linear infinite;
+  }
+
+  .quote-section::after {
+    content: '♫';
+    position: absolute;
+    font-size: 12rem;
+    opacity: 0.06;
+    bottom: -1rem;
+    right: 8%;
+    animation: spin 25s linear infinite reverse;
+  }
+
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .quote-section blockquote {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 3.5vw, 2.2rem);
+    font-weight: 500;
+    max-width: 22ch;
+    margin: 0 auto;
+    line-height: 1.4;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── CONTACT ── */
+  .contact {
+    background: var(--bg-alt);
+  }
+
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .contact-info h2 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .contact-info p {
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .contact-perks {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .contact-perks li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .perk-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .perk-icon:nth-child(1) { background: var(--honey-light); }
+
+  .contact-form-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid rgba(0,0,0,0.08);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--pink);
+  }
+
+  .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--pink), var(--coral));
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255,95,162,0.3);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,95,162,0.4);
+  }
+
+  .form-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+  }
+
+  /* ── DONATION ── */
+  .donation {
+    background: var(--bg);
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 2px solid rgba(0,0,0,0.04);
+  }
+
+  .donation-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: var(--radius);
+    padding: 3rem 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 2px solid rgba(0,0,0,0.04);
+  }
+
+  .donation-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .donation-card p {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .donation-btns {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .donation-btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 2px solid rgba(0,0,0,0.08);
+    color: var(--text);
+    background: white;
+  }
+
+  .donation-btn:hover {
+    border-color: var(--honey);
+    color: var(--honey-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245,200,66,0.2);
+  }
+
+  .donation-btn.primary-don {
+    background: var(--honey);
+    border-color: var(--honey);
+    color: var(--text);
+  }
+
+  .donation-btn.primary-don:hover {
+    background: var(--honey-dark);
+    color: white;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--text);
+    color: rgba(255,255,255,0.5);
+    padding: 3rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--honey), var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .footer-tagline {
+    font-style: italic;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0.8rem 1rem; }
+    .nav-links { display: none; }
+    section { padding: 3.5rem 1.25rem; }
+    .hero { padding: 6rem 1.25rem 3rem; }
+    .hero-characters { gap: 1rem; }
+    .hero-char { width: 72px; height: 72px; font-size: 1.8rem; }
+    .char-grid { grid-template-columns: 1fr; }
+    .how-steps { grid-template-columns: 1fr; gap: 1.5rem; }
+    .how-steps::before { display: none; }
+    .occasion-grid { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- FLOATING NOTES -->
+<div class="notes-bg" id="notesBg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SHAKKER KIDS ♪</div>
+  <ul class="nav-links">
+    <li><a href="#characters">Figuren</a></li>
+    <li><a href="#how">So geht's</a></li>
+    <li><a href="#occasions">Anlässe</a></li>
+    <li><a href="#contact" class="nav-cta">Song anfragen</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    600+ Songs produziert
+  </div>
+  <h1>
+    <span class="line1">Ein Song mit</span>
+    <span class="line2">deinem Namen drin.</span>
+    <span class="line3">Für Kinder. Für Eltern. Für echte Geschichten.</span>
+  </h1>
+  <p class="hero-sub">Du sagst mir, wer dein Kind ist. Ich mache daraus einen Song, den es nie wieder vergisst. Handgemacht. Persönlich. Nur für euch.</p>
+  <div class="hero-characters">
+    <div class="hero-char" title="BRUMM — für die Kleinen">🐻</div>
+    <div class="hero-char" title="MIKO — für die Coolen">⚡</div>
+    <div class="hero-char" title="ECHO — für die Träumer">🦊</div>
+  </div>
+  <div class="hero-cta-group">
+    <a href="#contact" class="btn btn-primary">Song anfragen ♪</a>
+    <a href="#characters" class="btn btn-secondary">Die Figuren kennenlernen</a>
+  </div>
+</section>
+
+<!-- CHARACTERS -->
+<section class="characters" id="characters">
+  <div class="container">
+    <div class="section-label reveal" style="color: var(--pink);">Drei Figuren, drei Welten</div>
+    <h2 class="section-title reveal">Wer singt für dein Kind?</h2>
+    <p class="section-sub reveal">Jede Figur hat ihren eigenen Sound, ihre eigene Welt — und dein Kind mittendrin.</p>
+
+    <div class="char-grid">
+      <!-- BRUMM -->
+      <div class="char-card reveal">
+        <div class="char-avatar">
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="65" r="42" fill="#F5C842"/>
+            <circle cx="30" cy="30" r="16" fill="#F5C842"/>
+            <circle cx="90" cy="30" r="16" fill="#F5C842"/>
+            <circle cx="30" cy="30" r="9" fill="#E8945A"/>
+            <circle cx="90" cy="30" r="9" fill="#E8945A"/>
+            <ellipse cx="60" cy="72" rx="18" ry="14" fill="#FFF3CC"/>
+            <circle cx="45" cy="58" r="8" fill="#1A1A2E"/>
+            <circle cx="75" cy="58" r="8" fill="#1A1A2E"/>
+            <circle cx="47" cy="55" r="3" fill="white"/>
+            <circle cx="77" cy="55" r="3" fill="white"/>
+            <ellipse cx="60" cy="68" rx="5" ry="3.5" fill="#1A1A2E"/>
+            <path d="M54 75 Q60 80 66 75" stroke="#1A1A2E" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M25 50 Q25 20 60 18 Q95 20 95 50" stroke="#E8945A" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <rect x="18" y="44" width="14" height="18" rx="5" fill="#E8945A"/>
+            <rect x="88" y="44" width="14" height="18" rx="5" fill="#E8945A"/>
+          </svg>
+        </div>
+        <h3>BRUMM</h3>
+        <div class="char-age">0–4 Jahre · Gute-Nacht-Welt</div>
+        <p>Ein kleiner Bär mit riesigen Kopfhörern. Singt Wiegenlieder mit dem Namen deines Kindes. Warm, sanft, zum Einschlafen und Wieder-Aufwachen.</p>
+        <div class="char-tags">
+          <span class="char-tag">Wiegenlied</span>
+          <span class="char-tag">Namenslied</span>
+          <span class="char-tag">Einschlafmusik</span>
+        </div>
+      </div>
+
+      <!-- MIKO -->
+      <div class="char-card reveal">
+        <div class="char-avatar">
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="40" fill="#FF5FA2"/>
+            <polygon points="35,25 28,8 42,20" fill="#00D4FF"/>
+            <polygon points="55,18 50,0 62,14" fill="#FF5FA2"/>
+            <polygon points="75,22 82,5 70,18" fill="#00D4FF"/>
+            <polygon points="90,35 102,22 88,32" fill="#FF5FA2"/>
+            <circle cx="60" cy="64" r="30" fill="#FFF0E6"/>
+            <ellipse cx="46" cy="60" rx="10" ry="11" fill="#1A1A2E"/>
+            <ellipse cx="74" cy="60" rx="10" ry="11" fill="#1A1A2E"/>
+            <circle cx="49" cy="56" r="4" fill="white"/>
+            <circle cx="43" cy="62" r="2" fill="white" opacity="0.6"/>
+            <circle cx="77" cy="56" r="4" fill="white"/>
+            <circle cx="71" cy="62" r="2" fill="white" opacity="0.6"/>
+            <path d="M50 74 Q60 82 70 74" stroke="#1A1A2E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="38" cy="72" r="5" fill="#FF5FA2" opacity="0.2"/>
+            <circle cx="82" cy="72" r="5" fill="#FF5FA2" opacity="0.2"/>
+            <rect x="20" y="44" width="80" height="4" rx="2" fill="#00D4FF"/>
+            <polygon points="100,42 102,48 108,48 103,52 105,58 100,54 95,58 97,52 92,48 98,48" fill="#F5C842"/>
+          </svg>
+        </div>
+        <h3>MIKO</h3>
+        <div class="char-age">5–8 Jahre · Beat-Welt</div>
+        <p>Bunte Haare, Sneakers, große Energie. Miko macht Songs, die klingen wie aus deiner Lieblingsserie — aber mit deiner Geschichte drin. Tanzen erlaubt.</p>
+        <div class="char-tags">
+          <span class="char-tag">K-Pop</span>
+          <span class="char-tag">Dancepop</span>
+          <span class="char-tag">Partysong</span>
+        </div>
+      </div>
+
+      <!-- ECHO -->
+      <div class="char-card reveal">
+        <div class="char-avatar">
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="50" fill="#7B2FBE" opacity="0.1"/>
+            <circle cx="60" cy="60" r="40" fill="#7B2FBE" opacity="0.15"/>
+            <ellipse cx="60" cy="65" rx="32" ry="28" fill="#7B2FBE"/>
+            <polygon points="35,42 22,12 48,36" fill="#7B2FBE"/>
+            <polygon points="85,42 98,12 72,36" fill="#7B2FBE"/>
+            <polygon points="35,40 27,18 46,36" fill="#00FFA3" opacity="0.4"/>
+            <polygon points="85,40 93,18 74,36" fill="#00FFA3" opacity="0.4"/>
+            <ellipse cx="60" cy="72" rx="18" ry="12" fill="#EDE0FF"/>
+            <ellipse cx="47" cy="60" rx="7" ry="8" fill="#00FFA3"/>
+            <ellipse cx="73" cy="60" rx="7" ry="8" fill="#00FFA3"/>
+            <ellipse cx="47" cy="60" rx="4" ry="5" fill="#1A1A2E"/>
+            <ellipse cx="73" cy="60" rx="4" ry="5" fill="#1A1A2E"/>
+            <circle cx="49" cy="57" r="2.5" fill="white"/>
+            <circle cx="75" cy="57" r="2.5" fill="white"/>
+            <ellipse cx="60" cy="69" rx="3.5" ry="2.5" fill="#1A1A2E"/>
+            <line x1="30" y1="68" x2="44" y2="70" stroke="#00FFA3" stroke-width="1" opacity="0.5"/>
+            <line x1="28" y1="73" x2="43" y2="73" stroke="#00FFA3" stroke-width="1" opacity="0.4"/>
+            <line x1="76" y1="70" x2="90" y2="68" stroke="#00FFA3" stroke-width="1" opacity="0.5"/>
+            <line x1="77" y1="73" x2="92" y2="73" stroke="#00FFA3" stroke-width="1" opacity="0.4"/>
+            <circle cx="25" cy="50" r="2" fill="#00FFA3" opacity="0.4"/>
+            <circle cx="95" cy="45" r="1.5" fill="#00FFA3" opacity="0.3"/>
+            <circle cx="40" cy="95" r="1.5" fill="#7B2FBE" opacity="0.3"/>
+            <circle cx="85" cy="90" r="2" fill="#00FFA3" opacity="0.2"/>
+            <circle cx="15" cy="70" r="1" fill="#00FFA3" opacity="0.5"/>
+            <circle cx="105" cy="65" r="1" fill="#7B2FBE" opacity="0.4"/>
+          </svg>
+        </div>
+        <h3>ECHO</h3>
+        <div class="char-age">9–12 Jahre + Erwachsene · Traumwelt</div>
+        <p>Halb Fuchs, halb Hologramm. Echo macht die Songs, die unter die Haut gehen. Cinematic, emotional, ein bisschen magisch. Für große Gefühle in jedem Alter.</p>
+        <div class="char-tags">
+          <span class="char-tag">Cinematic</span>
+          <span class="char-tag">Emotional</span>
+          <span class="char-tag">Magisch</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-label reveal" style="color: var(--honey-dark);">So einfach</div>
+    <h2 class="section-title reveal">Drei Schritte zu eurem Song</h2>
+    <p class="section-sub reveal">Kein Abo, kein Account, kein Quatsch. Du schreibst mir, ich mache Musik.</p>
+
+    <div class="how-steps">
+      <div class="step reveal">
+        <div class="step-icon">💬</div>
+        <h3>Du erzählst</h3>
+        <p>Name, Alter, was euer Kind mag, der Anlass. Ein paar Sätze reichen — je ehrlicher, desto besser wird's.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-icon">🎧</div>
+        <h3>Ich baue</h3>
+        <p>Text, Sound, Stimme, Iteration. 2–5 Tage. Zwischenstände auf Wunsch. Mindestens ein Feedback ist immer drin.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-icon">🎵</div>
+        <h3>Ihr hört</h3>
+        <p>Euer Song als MP3 oder WAV. Privater Link, nur für euch. Zum Abspielen, Verschenken, Immer-wieder-Hören.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANLÄSSE -->
+<section class="occasions" id="occasions">
+  <div class="container">
+    <div class="section-label reveal" style="color: var(--purple);">Wofür</div>
+    <h2 class="section-title reveal">Jeder Moment verdient seinen Sound</h2>
+    <p class="section-sub reveal">Das hier sind Ideen. Was du daraus machst, ist dein Ding.</p>
+
+    <div class="occasion-grid">
+      <div class="occasion-card reveal">
+        <div class="occasion-emoji">🎂</div>
+        <div>
+          <h3>Geburtstag</h3>
+          <p>Kein „Happy Birthday liebe Oma". Ein Song, der die Person kennt — Macken, Momente, Insider.</p>
+        </div>
+      </div>
+      <div class="occasion-card reveal">
+        <div class="occasion-emoji">🌙</div>
+        <div>
+          <h3>Gute Nacht</h3>
+          <p>Mit dem Namen deines Kindes. Jeden Abend das Gleiche — und jeden Abend perfekt.</p>
+        </div>
+      </div>
+      <div class="occasion-card reveal">
+        <div class="occasion-emoji">💍</div>
+        <div>
+          <h3>Hochzeit</h3>
+          <p>Eure Geschichte als Track. Die Insider-Witze, der erste Urlaub, das Versprechen.</p>
+        </div>
+      </div>
+      <div class="occasion-card reveal">
+        <div class="occasion-emoji">🎒</div>
+        <div>
+          <h3>Einschulung</h3>
+          <p>„Du bist jetzt groß" — aber als Song, mit Stolz und Beats statt Schulranzen-Werbung.</p>
+        </div>
+      </div>
+      <div class="occasion-card reveal">
+        <div class="occasion-emoji">🕯️</div>
+        <div>
+          <h3>Abschied</h3>
+          <p>Für jemanden, der fehlt. Kein Kitsch — echte Worte, die bleiben.</p>
+        </div>
+      </div>
+      <div class="occasion-card reveal">
+        <div class="occasion-emoji">⚡</div>
+        <div>
+          <h3>Dein Ding</h3>
+          <p>Podcast-Intro, Firmenhymne, Gaming-Track, Toniebox-Song, Satire. Wenn du's beschreibst, bau ich's.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <blockquote class="reveal">Jedes Kind verdient einen Song, in dem sein Name vorkommt.</blockquote>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="contact-info reveal">
+        <div class="section-label" style="color: var(--pink);">Anfrage</div>
+        <h2>Erzähl mir, wer euer Song-Held ist.</h2>
+        <p>Je mehr ich weiß, desto besser wird der Song. Name, Alter, Lieblingsfarbe, ob das Kind Dinos oder Einhörner mag — alles hilft. Aber auch drei Sätze reichen für den Anfang.</p>
+        <ul class="contact-perks">
+          <li><span class="perk-icon" style="background: var(--honey-light);">⏱️</span> Antwort innerhalb von 48 Stunden</li>
+          <li><span class="perk-icon" style="background: var(--pink-light);">🔄</span> Mindestens eine Feedback-Runde</li>
+          <li><span class="perk-icon" style="background: var(--purple-light);">🎁</span> Kein fester Preis — Spende wenn's passt</li>
+          <li><span class="perk-icon" style="background: var(--cyan-light);">🔒</span> Privat. Kein Spam. Nur euer Song.</li>
+        </ul>
+      </div>
+
+      <div class="contact-form-card reveal">
+        <!-- SETUP: Formspree-ID unten im LAUNCH-CONFIG-Script eintragen (formspree.io -> neues Formular -> ID) -->
+        <form id="kontaktForm" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dein Name</label>
+            <input type="text" name="dein_name" placeholder="Wie heißt du?" required>
+          </div>
+          <div class="form-group">
+            <label>E-Mail</label>
+            <input type="email" name="email" placeholder="Für die Antwort" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name des Kindes</label>
+            <input type="text" name="kind_name" placeholder="Wer kriegt den Song?">
+          </div>
+          <div class="form-group">
+            <label>Alter</label>
+            <select name="alter">
+              <option value="" disabled selected>Wie alt?</option>
+              <option>0–2 Jahre (Baby)</option>
+              <option>3–4 Jahre (Kleinkind)</option>
+              <option>5–6 Jahre (Vorschule)</option>
+              <option>7–8 Jahre (Grundschule)</option>
+              <option>9–12 Jahre (Tween)</option>
+              <option>Erwachsener Mensch</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Anlass</label>
+          <select name="anlass">
+            <option value="" disabled selected>Wofür ist der Song?</option>
+            <option>Geburtstag</option>
+            <option>Gute-Nacht-Lied</option>
+            <option>Einschulung</option>
+            <option>Hochzeit</option>
+            <option>Taufe</option>
+            <option>Abschied / Gedenken</option>
+            <option>Einfach so — weil's schön ist</option>
+            <option>Was anderes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Erzähl mir mehr</label>
+          <textarea name="details" placeholder="Was mag das Kind? Was ist passiert? Was soll der Song auslösen? Namen, Orte, Insider-Witze, Lieblingstiere — alles Gold. Je mehr, desto besser."></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Song anfragen ♪</button>
+        <p class="form-note">Kein Abo. Kein Newsletter. Nur Musik.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DONATION -->
+<section class="donation">
+  <div class="donation-card reveal">
+    <h3>Was es kostet? ☕</h3>
+    <p>Dieser Service hat hunderte Stunden gekostet, aber keinen festen Preis. Wenn euch der Song was bedeutet, freue ich mich über eine Spende. Wenn nicht — auch gut. Die Musik zählt, nicht die Rechnung.</p>
+    <div class="donation-btns">
+      <a id="don-bmac" href="#" target="_blank" rel="noopener" class="donation-btn primary-don">☕ Buy me a Coffee</a>
+      <a id="don-paypal" href="#" target="_blank" rel="noopener" class="donation-btn">PayPal</a>
+      <a id="don-ueber" href="#" class="donation-btn">Überweisung</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SHAKKER KIDS</div>
+  <div>Berlin · 2026</div>
+  <div class="footer-tagline">Vom Shaker zum Song.</div>
+</footer>
+
+<script>
+  // Floating notes
+  const notesBg = document.getElementById('notesBg');
+  const symbols = ['♪', '♫', '♬', '🎵', '🎶'];
+  for (let i = 0; i < 20; i++) {
+    const note = document.createElement('div');
+    note.className = 'note';
+    note.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    note.style.left = Math.random() * 100 + '%';
+    note.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+    note.style.animationDuration = (15 + Math.random() * 25) + 's';
+    note.style.animationDelay = -(Math.random() * 30) + 's';
+    notesBg.appendChild(note);
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+
+<!-- ====== SHAKKER KIDS – LAUNCH-CONFIG (nur hier ausfuellen) ====== -->
+<script>
+(function(){
+  const CONFIG = {
+    KONTAKT_EMAIL:     "maximilian.v.bassenheim@gmail.com",  // deine E-Mail (Anfragen landen hier)
+    FORMSPREE_ID:      "",   // optional (formspree.io Formular-ID) fuer Anfragen ohne Mailprogramm
+    PAYPAL_NAME:       "",   // optional (paypal.me/NAME)
+    BUYMEACOFFEE_NAME: ""    // optional (buymeacoffee.com/NAME)
+  };
+  const mail = CONFIG.KONTAKT_EMAIL || "DEINE@EMAIL.de";
+  const form = document.getElementById('kontaktForm');
+
+  function zeigeErfolg(){
+    const btn = form.querySelector('.submit-btn') || form.querySelector('button[type=submit]');
+    if(btn){ btn.textContent="✓ Anfrage abgeschickt!"; btn.disabled=true;
+             btn.style.background="linear-gradient(135deg,#A8E6CF,#55C48B)"; btn.style.color="#0d2b1e"; }
+    let note = form.querySelector('.erfolg-note');
+    if(!note){ note=document.createElement('p'); note.className='erfolg-note';
+      note.style.cssText="margin-top:16px;padding:14px 16px;border-radius:14px;background:#E8FBF0;color:#1f7a52;font-weight:700;text-align:center;";
+      form.appendChild(note); }
+    note.textContent="✓ Danke! Deine Anfrage ist raus – wir melden uns innerhalb von 48 Stunden.";
+    note.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const d = new FormData(form);
+      if(CONFIG.FORMSPREE_ID){
+        fetch("https://formspree.io/f/"+CONFIG.FORMSPREE_ID,{method:"POST",body:d,headers:{'Accept':'application/json'}})
+          .then(()=>zeigeErfolg()).catch(()=>zeigeErfolg());
+      } else {
+        let body=""; d.forEach((v,k)=>{ if(v) body+=k+": "+v+"\n"; });
+        window.location.href="mailto:"+mail+"?subject="+encodeURIComponent("Shakker Kids – Neue Anfrage")+"&body="+encodeURIComponent(body);
+        setTimeout(zeigeErfolg, 300);
+      }
+    });
+  }
+  const bmac=document.getElementById('don-bmac'), pp=document.getElementById('don-paypal'), ub=document.getElementById('don-ueber');
+  if(bmac){ CONFIG.BUYMEACOFFEE_NAME ? bmac.href="https://buymeacoffee.com/"+CONFIG.BUYMEACOFFEE_NAME : bmac.style.display="none"; }
+  if(pp){ CONFIG.PAYPAL_NAME ? pp.href="https://paypal.me/"+CONFIG.PAYPAL_NAME : pp.style.display="none"; }
+  if(ub){ ub.href="mailto:"+mail+"?subject="+encodeURIComponent("Shakker Kids – Ueberweisung"); }
+})();
+</script>
+
+</body>
+</html>
