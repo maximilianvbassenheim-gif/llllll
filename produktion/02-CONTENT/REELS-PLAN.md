@@ -1,4 +1,4 @@
-# 🎬 Shakker Kids — Deine ersten 5 Reels/TikToks
+# 🎬 Shakker Kids — Deine ersten 7 Reels/TikToks
 
 Jedes Reel funktioniert auf Instagram Reels, TikTok UND YouTube Shorts —
 einmal drehen, dreimal posten. Format: Hochkant 9:16, 15–30 Sekunden,
@@ -117,6 +117,55 @@ was er euch wert ist. #shakkerkids"
 **Hashtags:**
 #geschenkidee #geburtstagsgeschenk #einschulung #patenkind #enkelkind
 #geschenketipps #nachhaltigschenken #kindergeburtstag #familienzeit #shakkerkids
+
+---
+
+## Reel 6 — „Werwolf-Geburtstag" (der Cliffhanger wird eingelöst 🐺)
+
+**Hook (Sekunde 0–2):**
+> „Ein Werwolf auf dem Kindergeburtstag?! Keine Panik — der will nur tanzen. 🐺"
+
+**Ablauf (20–30 Sek):**
+1. (0–2s) Hook + dramatisch-alberne Vollmond-Optik (Taschenlampe hinter Pappmond reicht!)
+2. (2–15s) Mini-Story mit Humor: Werwolf heult — aber schief. Er übt. [NAME] hilft ihm,
+   den Takt zu finden — dazu Song-Ausschnitt (Miko-Welt, fetziger Beat)
+3. (15–25s) Alle „heulen" gemeinsam im Takt — Tanz-Moment
+4. (25–30s) Abbinder: „Flauschig-gruselige Songs für kleine Helden → Link in Bio"
+
+**Caption:**
+„Grusel für 3–9-Jährige heißt: ein Werwolf, der nicht singen kann. 🐺🎵 Dein Kind
+bringt's ihm bei — im eigenen Song. Nie zu gruselig, immer zum Mittanzen. #shakkerkids"
+
+**Hashtags:**
+#werwolf #kindergeburtstag #gruselspass #halloweenkids #kindertanz
+#kidsparty #monsterparty #kindersongs #mitmachlied #shakkerkids
+
+---
+
+## Reel 7 — „Von 300 Ideen zur 1" (Transparenz + Community-Aufbau)
+
+**Hook:**
+> „Ich hatte 300 Song-Ideen. Ihr entscheidet, welche 3 ich baue. 👇"
+
+**Ablauf (15–20 Sek):**
+1. (0–2s) Hook + Zettelberg/Notiz-App mit endloser Liste (überspielt chaotisch)
+2. (2–12s) Schnelle Cuts: 6–8 absurd-lustige Song-Titel einblenden, z. B.
+   „Das Brokkoli-Battle", „Oma fährt Skateboard", „Der Zahnlücken-Rap",
+   „Dino sucht WG", „Schlaf jetzt, sonst singt Papa", „Pfützen-Parkour"
+3. (12–18s) „Kommentiere 1, 2 oder 3 — die Gewinner-Songs kommen nächste Woche!"
+
+**Caption:**
+„Demokratie im Kinderzimmer: IHR wählt die nächsten Songs. Schreib deine Nummer
+in die Kommentare — und wenn dein Kind einen EIGENEN Song will: Link in Bio. 🎵
+#shakkerkids"
+
+**Hashtags:**
+#communityentscheidet #songwriting #kinderlieder #mitmachen #abstimmung
+#lustigekinder #familienspass #contentcreator #musikmachen #shakkerkids
+
+**💡 Warum dieses Reel Gold ist:** Kommentare sind das stärkste Algorithmus-Signal.
+Und du baust nebenbei deinen Ideen-Speicher fürs Publikum sichtbar auf
+(→ `IDEEN-SPEICHER.md`).
 
 ---
 

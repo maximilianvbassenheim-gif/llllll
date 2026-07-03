@@ -1,4 +1,9 @@
-# 🕹️ Pixel Arcade
+# 🕹️ Pixel Arcade & 🎵 Shakker Kids
+
+**🌐 LIVE:**
+- Arcade: https://maximilianvbassenheim-gif.github.io/llllll/
+- Shakker Kids (Song-Marke): https://maximilianvbassenheim-gif.github.io/llllll/shakker-kids/
+- 📦 Produktions-Handbuch: [`produktion/00-START-HIER.md`](produktion/00-START-HIER.md) 🔦
 
 Eine startklare, monetarisierbare Sammlung kostenloser HTML5-Browserspiele:
 **Snake, Breakout, 2048 und Flappy**. Reines HTML/CSS/JavaScript – keine
