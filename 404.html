@@ -4,18 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>404 – Seite nicht gefunden</title>
-  <link rel="stylesheet" href="/llllll/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕹️</text></svg>">
+  <style>
+    /* Eigenständig (kein externes CSS): 404 wird auf beliebigen Pfaden ausgeliefert */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -10%, #2a2d52 0%, #0f1020 60%);
+      color: #eef0ff; min-height: 100vh; text-align: center;
+    }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 15vh 16px 0; }
+    h1 { margin: 16px 0; }
+    p { color: #9aa0c5; margin-bottom: 24px; }
+    .btn {
+      display: inline-block; padding: 11px 18px; margin: 4px;
+      border-radius: 10px; font-weight: 600; text-decoration: none; color: #fff;
+      background: linear-gradient(90deg, #6c5ce7, #00d2d3);
+    }
+    .btn.secondary { background: transparent; border: 1px solid #6c5ce7; }
+  </style>
 </head>
 <body>
-  <div class="container" style="text-align:center; padding-top:15vh;">
+  <div class="wrap">
     <div style="font-size:5rem;">🐭❓</div>
-    <h1 style="margin:16px 0;">404 – Narf!</h1>
-    <p style="color:var(--muted); margin-bottom:24px;">
-      Pinky hat diese Seite verlegt. Brain arbeitet bereits an einem Plan, sie wiederzufinden.
-    </p>
+    <h1>404 – Narf!</h1>
+    <p>Pinky hat diese Seite verlegt. Brain arbeitet bereits an einem Plan, sie wiederzufinden.</p>
     <p>
       <a class="btn" href="/llllll/">🕹️ Zur Arcade</a>
-      &nbsp;
       <a class="btn secondary" href="/llllll/shakker-kids/">🎵 Zu Shakker Kids</a>
     </p>
   </div>
