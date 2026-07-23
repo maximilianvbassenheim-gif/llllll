@@ -64,8 +64,6 @@ def start_master(produktion_root: str = DEFAULT_PRODUKTION) -> Optional[subproce
     log("Starting master service...")
     proc = subprocess.Popen(
         ["powershell", "-ExecutionPolicy", "Bypass", "-File", str(script)],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
     )
     log(f"Master started (PID {proc.pid})")
     return proc
