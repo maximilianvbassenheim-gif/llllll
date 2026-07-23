@@ -173,7 +173,7 @@ def generate(req: LLMRequest):
     import time
 
     if req.stream:
-        raise HTTPException(status_code=400, detail="stream=true is not supported.")
+        raise HTTPException(status_code=400, detail="Streaming is not supported.")
 
     # Optional multimedia capture
     if req.capture_webcam and media_manager:

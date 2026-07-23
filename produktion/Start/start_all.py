@@ -41,7 +41,7 @@ def log(msg: str, level: str = "INFO") -> None:
     print(f"{ts} | {level:7s} | start_all | {msg}", flush=True)
 
 
-def _default_remote_username() -> str:
+def _resolve_ssh_username() -> str:
     return (
         os.environ.get("WORKER_SSH_USERNAME")
         or os.environ.get("USERNAME")
@@ -79,7 +79,9 @@ def start_worker_ssh(worker: dict, produktion_root: str = DEFAULT_PRODUKTION) ->
     Returns True on success.
     """
     host     = worker["host"]
-    username = worker.get("username") or _default_remote_username()
+    username = worker.get("username")
+    if username is None:
+        username = _resolve_ssh_username()
     wid      = worker["id"]
     port     = worker["port"]
     ssh_key  = worker.get("ssh_key")
