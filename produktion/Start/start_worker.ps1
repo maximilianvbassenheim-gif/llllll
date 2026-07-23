@@ -30,6 +30,7 @@ $ArchivDir      = Join-Path $ProduktionRoot "Archiv"
 $LogDir         = Join-Path $ArchivDir "logs"
 $ConfigPath     = Join-Path $AISystemeDir "config.yaml"
 $LogFile        = Join-Path $LogDir ("${WorkerId}_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".log")
+$ProcOutLogFile = $LogFile -replace "\.log$", "_out.log"
 
 # --------------------------------------------------------------------------
 # Logging-Hilfsfunktion
@@ -88,6 +89,10 @@ if (-not (Test-Path $ConfigPath)) {
 $ReqFile = Join-Path $ReproCodeDir "requirements.txt"
 if (Test-Path $ReqFile) {
     python -m pip install -r $ReqFile --quiet
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "Abhaengigkeiten-Installation fehlgeschlagen (ExitCode: $LASTEXITCODE)." "ERROR"
+        exit $LASTEXITCODE
+    }
     Write-Log "Abhaengigkeiten OK."
 }
 
@@ -103,7 +108,7 @@ $env:WORKER_PORT = $Port.ToString()
 Set-Location $ReproCodeDir
 $proc = Start-Process python `
     -ArgumentList "worker.py" `
-    -RedirectStandardOutput $LogFile `
+    -RedirectStandardOutput $ProcOutLogFile `
     -RedirectStandardError  ($LogFile -replace "\.log$", "_err.log") `
     -PassThru `
     -NoNewWindow
@@ -117,7 +122,7 @@ $PidFile = Join-Path $LogDir "${WorkerId}.pid"
 $proc.Id | Set-Content $PidFile
 
 # --------------------------------------------------------------------------
-# Beim Master registrieren
+# Master-Verbindung pruefen
 # --------------------------------------------------------------------------
 Start-Sleep -Seconds 5  # Warte bis Worker bereit
 $MasterUrl = "http://${MasterHost}:${MasterPort}"

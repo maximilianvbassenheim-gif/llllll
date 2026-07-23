@@ -109,17 +109,22 @@ registry = WorkerRegistry()
 # Health-check loop
 # ---------------------------------------------------------------------------
 
+def _fetch_health(worker: WorkerInfo) -> str:
+    status = "offline"
+    try:
+        r = requests.get(f"{worker.base_url}/health", timeout=5)
+        if r.status_code == 200:
+            data = r.json()
+            status = "online" if data.get("status") == "ok" else "degraded"
+    except Exception:
+        status = "offline"
+    return status
+
+
 async def _health_check_loop(interval: int = 30) -> None:
     while True:
         for worker in registry.all_workers():
-            status = "offline"
-            try:
-                r = requests.get(f"{worker.base_url}/health", timeout=5)
-                if r.status_code == 200:
-                    data = r.json()
-                    status = "online" if data.get("status") == "ok" else "degraded"
-            except Exception:
-                status = "offline"
+            status = await asyncio.to_thread(_fetch_health, worker)
             await registry.update_status(worker.id, status)
             logger.debug("Health check %s → %s", worker.id, status)
         await asyncio.sleep(interval)
@@ -250,7 +255,12 @@ async def route_generate(req: RouteRequest):
     payload = req.model_dump()
     start = time.monotonic()
     try:
-        r = requests.post(f"{worker.base_url}/generate", json=payload, timeout=300)
+        r = await asyncio.to_thread(
+            requests.post,
+            f"{worker.base_url}/generate",
+            json=payload,
+            timeout=300,
+        )
         r.raise_for_status()
         data = r.json()
     except Exception as exc:
@@ -283,7 +293,11 @@ async def aggregate_models():
         if worker.status != "online":
             continue
         try:
-            r = requests.get(f"{worker.base_url}/models", timeout=5)
+            r = await asyncio.to_thread(
+                requests.get,
+                f"{worker.base_url}/models",
+                timeout=5,
+            )
             if r.status_code == 200:
                 for m in r.json().get("models", []):
                     key = m.get("name", "")

@@ -14,6 +14,7 @@ $ArchivDir      = Join-Path $ProduktionRoot "Archiv"
 $LogDir         = Join-Path $ArchivDir "logs"
 $ConfigPath     = Join-Path $AISystemeDir "config.yaml"
 $LogFile        = Join-Path $LogDir ("master_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".log")
+$ProcOutLogFile = $LogFile -replace "\.log$", "_out.log"
 
 # --------------------------------------------------------------------------
 # Logging-Hilfsfunktion
@@ -65,6 +66,10 @@ Write-Log "Pruefe Python-Abhaengigkeiten..."
 $ReqFile = Join-Path $ReproCodeDir "requirements.txt"
 if (Test-Path $ReqFile) {
     python -m pip install -r $ReqFile --quiet
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "Abhaengigkeiten-Installation fehlgeschlagen (ExitCode: $LASTEXITCODE)." "ERROR"
+        exit $LASTEXITCODE
+    }
     Write-Log "Abhaengigkeiten installiert."
 } else {
     Write-Log "requirements.txt nicht gefunden: $ReqFile" "WARN"
@@ -79,7 +84,7 @@ $env:CONFIG_PATH = $ConfigPath
 Set-Location $ReproCodeDir
 $proc = Start-Process python `
     -ArgumentList "orchestrator.py" `
-    -RedirectStandardOutput $LogFile `
+    -RedirectStandardOutput $ProcOutLogFile `
     -RedirectStandardError  ($LogFile -replace "\.log$", "_err.log") `
     -PassThru `
     -NoNewWindow

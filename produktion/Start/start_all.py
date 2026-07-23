@@ -9,6 +9,7 @@ Usage:
 """
 
 import argparse
+import getpass
 import json
 import os
 import subprocess
@@ -40,6 +41,15 @@ def log(msg: str, level: str = "INFO") -> None:
     print(f"{ts} | {level:7s} | start_all | {msg}", flush=True)
 
 
+def _default_remote_username() -> str:
+    return (
+        os.environ.get("WORKER_SSH_USERNAME")
+        or os.environ.get("USERNAME")
+        or os.environ.get("USER")
+        or getpass.getuser()
+    )
+
+
 # ---------------------------------------------------------------------------
 # Master startup
 # ---------------------------------------------------------------------------
@@ -54,9 +64,8 @@ def start_master(produktion_root: str = DEFAULT_PRODUKTION) -> Optional[subproce
     log("Starting master service...")
     proc = subprocess.Popen(
         ["powershell", "-ExecutionPolicy", "Bypass", "-File", str(script)],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     log(f"Master started (PID {proc.pid})")
     return proc
@@ -72,7 +81,7 @@ def start_worker_ssh(worker: dict, produktion_root: str = DEFAULT_PRODUKTION) ->
     Returns True on success.
     """
     host     = worker["host"]
-    username = worker.get("username", "maxim")
+    username = worker.get("username") or _default_remote_username()
     wid      = worker["id"]
     port     = worker["port"]
     ssh_key  = worker.get("ssh_key")
@@ -86,12 +95,10 @@ def start_worker_ssh(worker: dict, produktion_root: str = DEFAULT_PRODUKTION) ->
     ssh_args = ["ssh"]
     if ssh_key:
         ssh_args += ["-i", ssh_key]
-    ssh_args += [
-        "-o", "StrictHostKeyChecking=no",
-        "-o", "ConnectTimeout=10",
-        f"{username}@{host}",
-        ps_cmd,
-    ]
+    ssh_args += ["-o", "ConnectTimeout=10"]
+    if os.environ.get("SSH_DISABLE_STRICT_HOST_KEY_CHECKING") == "1":
+        ssh_args += ["-o", "StrictHostKeyChecking=no"]
+    ssh_args += [f"{username}@{host}", ps_cmd]
 
     log(f"Starting {wid} on {host}:{port}...")
     try:
@@ -113,7 +120,6 @@ def start_worker_ssh(worker: dict, produktion_root: str = DEFAULT_PRODUKTION) ->
 def _start_worker_winrm(worker: dict, produktion_root: str) -> bool:
     """Fallback: use PowerShell Invoke-Command (WinRM) to start the worker."""
     host     = worker["host"]
-    username = worker.get("username", "maxim")
     wid      = worker["id"]
     port     = worker["port"]
 

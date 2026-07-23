@@ -5,7 +5,6 @@
       "host": "192.168.1.101",
       "port": 8001,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 1 — Main desktop"
     },
@@ -14,7 +13,6 @@
       "host": "192.168.1.102",
       "port": 8002,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 2"
     },
@@ -23,7 +21,6 @@
       "host": "192.168.1.103",
       "port": 8003,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 3"
     },
@@ -32,7 +29,6 @@
       "host": "192.168.1.104",
       "port": 8004,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 4"
     },
@@ -41,7 +37,6 @@
       "host": "192.168.1.105",
       "port": 8005,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 5"
     },
@@ -50,7 +45,6 @@
       "host": "192.168.1.106",
       "port": 8006,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 6"
     },
@@ -59,7 +53,6 @@
       "host": "192.168.1.107",
       "port": 8007,
       "ollama_port": 11434,
-      "username": "maxim",
       "ssh_key": null,
       "description": "Worker 7"
     }

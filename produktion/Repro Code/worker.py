@@ -157,7 +157,7 @@ async def health():
 
 
 @app.get("/models")
-async def list_models():
+def list_models():
     """List available Ollama models on this worker."""
     try:
         r = requests.get(f"{_ollama_url()}/api/tags", timeout=5)
@@ -168,9 +168,12 @@ async def list_models():
 
 
 @app.post("/generate", response_model=LLMResponse)
-async def generate(req: LLMRequest):
+def generate(req: LLMRequest):
     """Process an LLM generation request via Ollama."""
     import time
+
+    if req.stream:
+        raise HTTPException(status_code=400, detail="stream=true is not supported.")
 
     # Optional multimedia capture
     if req.capture_webcam and media_manager:

@@ -45,7 +45,7 @@ def load_config(config_path: str | Path) -> dict:
     if not config_path.exists():
         raise FileNotFoundError(f"Config not found: {config_path}")
     with config_path.open("r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+        return yaml.safe_load(fh) or {}
 
 
 def load_models(models_path: str | Path) -> list[dict]:
