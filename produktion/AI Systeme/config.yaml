@@ -1,0 +1,76 @@
+master:
+  host: 0.0.0.0
+  port: 8000
+  log_level: info
+  health_check_interval: 30  # seconds
+
+workers:
+  - id: worker_1
+    host: 192.168.1.101
+    port: 8001
+    ollama_port: 11434
+  - id: worker_2
+    host: 192.168.1.102
+    port: 8002
+    ollama_port: 11434
+  - id: worker_3
+    host: 192.168.1.103
+    port: 8003
+    ollama_port: 11434
+  - id: worker_4
+    host: 192.168.1.104
+    port: 8004
+    ollama_port: 11434
+  - id: worker_5
+    host: 192.168.1.105
+    port: 8005
+    ollama_port: 11434
+  - id: worker_6
+    host: 192.168.1.106
+    port: 8006
+    ollama_port: 11434
+  - id: worker_7
+    host: 192.168.1.107
+    port: 8007
+    ollama_port: 11434
+
+storage:
+  share_path: "\\\\server\\produktion"
+  models_dir: "\\\\server\\produktion\\AI Systeme\\models"
+  archive_dir: "\\\\server\\produktion\\Archiv"
+  inbox_dir: "\\\\server\\produktion\\Eingang"
+
+models:
+  - name: llama2
+    size: 7b
+    type: text
+  - name: mistral
+    size: 7b
+    type: text
+  - name: llava
+    size: 7b
+    type: multimodal
+  - name: whisper
+    size: base
+    type: audio
+
+multimedia:
+  webcam_devices:
+    - name: insta_360
+      device_id: 0
+      resolution: [3840, 2160]
+      fps: 30
+    - name: logitech
+      device_id: 1
+      resolution: [1920, 1080]
+      fps: 30
+  audio_input: default
+  storage_format: mp4
+  frame_capture_interval: 5  # seconds between auto-captures
+  audio_chunk_duration: 10   # seconds per audio chunk
+
+archive:
+  db_path: "\\\\server\\produktion\\Archiv\\metadata.db"
+  enable_checksums: true
+  backup_interval: 86400  # seconds (24h)
+  max_log_size_mb: 100
