@@ -10,6 +10,7 @@ Usage:
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -23,7 +24,11 @@ import requests
 # ---------------------------------------------------------------------------
 
 DEFAULT_CONFIG = Path(__file__).parent / "config_workers.json"
-DEFAULT_PRODUKTION = r"C:\Users\maxim\OneDrive\Desktop\Produktion"
+_home = Path(os.environ.get("USERPROFILE", os.path.expanduser("~")))
+DEFAULT_PRODUKTION = os.environ.get(
+    "PRODUKTION_PATH",
+    str(_home / "OneDrive" / "Desktop" / "Produktion"),
+)
 
 # ---------------------------------------------------------------------------
 # Logging (simple print-based, no external dep at startup)

@@ -31,7 +31,11 @@ from utils import (
 # Config
 # ---------------------------------------------------------------------------
 
-CONFIG_PATH = Path(env_or("CONFIG_PATH", r"C:\Users\maxim\OneDrive\Desktop\Produktion\AI Systeme\config.yaml"))
+_default_config = (
+    Path(os.environ.get("USERPROFILE", os.path.expanduser("~")))
+    / "OneDrive" / "Desktop" / "Produktion" / "AI Systeme" / "config.yaml"
+)
+CONFIG_PATH = Path(env_or("CONFIG_PATH", str(_default_config)))
 WORKER_ID   = env_or("WORKER_ID", "worker_1")
 WORKER_PORT = int(env_or("WORKER_PORT", "8001"))
 

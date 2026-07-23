@@ -4,9 +4,10 @@
 $ErrorActionPreference = "Stop"
 
 # --------------------------------------------------------------------------
-# Pfade
+# Pfade — konfigurierbar via Umgebungsvariablen
 # --------------------------------------------------------------------------
-$ProduktionRoot = "C:\Users\maxim\OneDrive\Desktop\Produktion"
+$ProduktionRoot = if ($env:PRODUKTION_PATH) { $env:PRODUKTION_PATH } `
+                  else { "C:\Users\$env:USERNAME\OneDrive\Desktop\Produktion" }
 $ReproCodeDir   = Join-Path $ProduktionRoot "Repro Code"
 $AISystemeDir   = Join-Path $ProduktionRoot "AI Systeme"
 $ArchivDir      = Join-Path $ProduktionRoot "Archiv"
@@ -47,8 +48,8 @@ if (-not (Test-Path $ConfigPath)) {
 }
 Write-Log "Config gefunden: $ConfigPath"
 
-# Netzwerk-Share pruefen
-$SharePath = "\\server\produktion"
+# Netzwerk-Share pruefen (SHARE_PATH kann via Umgebungsvariable gesetzt werden)
+$SharePath = if ($env:SHARE_PATH) { $env:SHARE_PATH } else { "\\server\produktion" }
 if (Test-Path $SharePath) {
     Write-Log "Netzwerk-Share erreichbar: $SharePath"
 } else {

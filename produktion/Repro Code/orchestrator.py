@@ -33,8 +33,12 @@ from utils import (
 # Config
 # ---------------------------------------------------------------------------
 
+_default_config = (
+    Path(os.environ.get("USERPROFILE", os.path.expanduser("~")))
+    / "OneDrive" / "Desktop" / "Produktion" / "AI Systeme" / "config.yaml"
+)
 CONFIG_PATH = Path(
-    env_or("CONFIG_PATH", r"C:\Users\maxim\OneDrive\Desktop\Produktion\AI Systeme\config.yaml")
+    env_or("CONFIG_PATH", str(_default_config))
 )
 
 config: dict = {}
