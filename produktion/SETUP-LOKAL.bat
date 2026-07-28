@@ -1,12 +1,12 @@
 @echo off
 chcp 65001 >nul
 rem ============================================================
-rem  PRODUKTION-SETUP (ZENTRAL)
+rem  PRODUKTION-SETUP (zentral)
 rem  Zielbild:
 rem  1) EINE zentrale Datenbasis auf T7 (E:\PRODUKTION)
 rem  2) Grosse/statische Bereiche auf T7 (06/07/08 + Archiv)
 rem  3) PC-uebergreifende Arbeitsordner in OneDrive
-rem     (mit "Dateien bei Bedarf" aktivieren)
+rem     (OneDrive "Dateien bei Bedarf" / Files On-Demand aktivieren)
 rem ============================================================
 setlocal EnableDelayedExpansion
 

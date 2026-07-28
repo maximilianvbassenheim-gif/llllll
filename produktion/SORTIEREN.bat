@@ -38,7 +38,7 @@ echo [1/4] Quellen pruefen und grob zusammenfassen ...
     echo Quelle;Pfad;Dateien;Groesse_Bytes;Groesse_GB
 ) > "%PLAN_DIR%\quellen_uebersicht.csv"
 
-for %%N in (1 2 3) do call :summarize %%N
+for %%N in (1 2 3) do call :collect_source_stats %%N
 
 echo [2/4] Duplikat-Analyse (nach relativen Pfaden) ...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
@@ -70,7 +70,7 @@ if errorlevel 1 (
 )
 
 echo [3/4] Kopierplan (nur Simulation mit ROBOCOPY /L) ...
-for %%N in (1 2 3) do call :plan_copy %%N
+for %%N in (1 2 3) do call :generate_robocopy_plan %%N
 
 echo [4/4] Abschluss-Hinweise schreiben ...
 (
@@ -98,7 +98,7 @@ echo.
 pause
 exit /b 0
 
-:summarize
+:collect_source_stats
 setlocal
 call set SRC=%%SRC%1%%
 if not defined SRC (
@@ -114,7 +114,7 @@ for /f "usebackq delims=" %%L in (`powershell -NoProfile -Command "$p='%SRC%'; $
 )
 endlocal & goto :eof
 
-:plan_copy
+:generate_robocopy_plan
 setlocal
 call set SRC=%%SRC%1%%
 if not defined SRC (
