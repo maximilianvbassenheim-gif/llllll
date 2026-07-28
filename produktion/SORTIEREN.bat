@@ -125,5 +125,5 @@ if not exist "%SRC%" (
     endlocal & goto :eof
 )
 echo [Quelle %1] Simuliere Kopie "%SRC%" -> "%T7_ROOT%"
-robocopy "%SRC%" "%T7_ROOT%" /E /L /COPY:DAT /DCOPY:T /R:0 /W:0 /NP /TEE /LOG:"%PLAN_DIR%\kopierplan_quelle%1.log" >nul
+robocopy "%SRC%" "%T7_ROOT%" /E /L /COPY:DAT /DCOPY:T /R:0 /W:0 /NP /LOG:"%PLAN_DIR%\kopierplan_quelle%1.log" >nul
 endlocal & goto :eof
