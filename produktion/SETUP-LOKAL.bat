@@ -45,6 +45,7 @@ if defined OneDrive (
     echo  WICHTIG: In OneDrive "Dateien bei Bedarf" aktivieren:
     echo          OneDrive-Einstellungen ^> Synchronisierung und Sicherung
     echo          ^> Erweiterte Einstellungen ^> Dateien bei Bedarf EIN.
+    echo          Hinweis: Menuepunkte koennen je nach Sprache/Version abweichen.
 ) else (
     echo  [OneDrive] nicht eingerichtet - uebersprungen.
 )

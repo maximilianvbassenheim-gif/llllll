@@ -109,7 +109,7 @@ if not exist "%SRC%" (
     endlocal & goto :eof
 )
 echo [Quelle %1] %SRC%
-for /f "usebackq delims=" %%L in (`powershell -NoProfile -Command "$p='%SRC%'; $files=Get-ChildItem -LiteralPath $p -Recurse -File -ErrorAction SilentlyContinue; $count=($files|Measure-Object).Count; $bytes=($files|Measure-Object -Property Length -Sum).Sum; if($null -eq $bytes){$bytes=0}; $gb=[math]::Round($bytes/1GB,2); Write-Output ('%1;'+$p+';'+$count+';'+$bytes+';'+$gb)"`) do (
+for /f "usebackq delims=" %%L in (`powershell -NoProfile -Command "$p='%SRC%'; $count=0; $bytes=0; Get-ChildItem -LiteralPath $p -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object { $count++; $bytes += $_.Length }; $gb=[math]::Round($bytes/1GB,2); Write-Output ('%1;'+$p+';'+$count+';'+$bytes+';'+$gb)"`) do (
     >> "%PLAN_DIR%\quellen_uebersicht.csv" echo %%L
 )
 endlocal & goto :eof
