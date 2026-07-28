@@ -1,0 +1,55 @@
+{
+  "models": [
+    {
+      "name": "llama2",
+      "tag": "7b",
+      "type": "text",
+      "size_gb": 3.8,
+      "description": "Meta Llama 2 7B - general purpose text model",
+      "ollama_name": "llama2:7b",
+      "capabilities": ["chat", "completion"],
+      "min_ram_gb": 8
+    },
+    {
+      "name": "mistral",
+      "tag": "7b",
+      "type": "text",
+      "size_gb": 4.1,
+      "description": "Mistral 7B - fast and capable text model",
+      "ollama_name": "mistral:7b",
+      "capabilities": ["chat", "completion"],
+      "min_ram_gb": 8
+    },
+    {
+      "name": "llava",
+      "tag": "7b",
+      "type": "multimodal",
+      "size_gb": 4.5,
+      "description": "LLaVA 7B - image + text multimodal model",
+      "ollama_name": "llava:7b",
+      "capabilities": ["chat", "vision"],
+      "min_ram_gb": 10
+    },
+    {
+      "name": "whisper",
+      "tag": "base",
+      "type": "audio",
+      "size_gb": 0.14,
+      "description": "OpenAI Whisper base - speech to text",
+      "ollama_name": "whisper:base",
+      "capabilities": ["transcription"],
+      "min_ram_gb": 2
+    },
+    {
+      "name": "codellama",
+      "tag": "7b",
+      "type": "code",
+      "size_gb": 3.8,
+      "description": "Code Llama 7B - code generation and completion",
+      "ollama_name": "codellama:7b",
+      "capabilities": ["chat", "completion", "code"],
+      "min_ram_gb": 8
+    }
+  ],
+  "updated_at": "2024-01-01T00:00:00Z"
+}

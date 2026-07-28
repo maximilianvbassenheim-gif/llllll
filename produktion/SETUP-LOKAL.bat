@@ -1,50 +1,62 @@
 @echo off
 chcp 65001 >nul
 rem ============================================================
-rem  SHAKKER KIDS / PRODUKTION — Ordnerstruktur-Setup
-rem  Doppelklick genügt. Legt die PRODUKTION-Struktur an auf:
-rem  E:\ (Hauptplatte), C:\, G:\ (falls vorhanden) und OneDrive.
+rem  PRODUKTION-SETUP (zentral)
+rem  Zielbild:
+rem  1) EINE zentrale Datenbasis auf T7 (E:\PRODUKTION)
+rem  2) Grosse/statische Bereiche auf T7 (06/07/08 + Archiv)
+rem  3) PC-uebergreifende Arbeitsordner in OneDrive
+rem     (OneDrive "Dateien bei Bedarf" / Files On-Demand aktivieren)
 rem ============================================================
 setlocal EnableDelayedExpansion
 
-set FOLDERS=00-START-HIER 01-MARKE 02-CONTENT 03-VERKAUF 04-SETUP 05-ROUTINE 06-ROHMATERIAL 07-AUDIO 08-FERTIG
+set T7_ROOT=E:\PRODUKTION
+set T7_FOLDERS=00-START-HIER 01-MARKE 02-CONTENT 03-VERKAUF 04-SETUP 05-ROUTINE 06-ROHMATERIAL 07-AUDIO 08-FERTIG Archiv Eingang
+set ONEDRIVE_FOLDERS=00-START-HIER 01-MARKE 02-CONTENT 03-VERKAUF 04-SETUP 05-ROUTINE
 
 echo.
 echo  ============================================
-echo   PRODUKTION-Struktur wird angelegt ...
+echo   PRODUKTION-Setup (zentral auf T7)
 echo  ============================================
 echo.
 
-for %%D in (E C G) do (
-    if exist %%D:\ (
-        echo  [%%D:] Laufwerk gefunden - lege %%D:\PRODUKTION an ...
-        for %%F in (%FOLDERS%) do (
-            if not exist "%%D:\PRODUKTION\%%F" mkdir "%%D:\PRODUKTION\%%F"
-        )
-        echo  [%%D:] fertig.
-    ) else (
-        echo  [%%D:] nicht vorhanden - uebersprungen.
-    )
+if not exist E:\ (
+    echo  [FEHLER] T7 nicht angeschlossen. E: fehlt.
+    echo  Bitte T7 anschliessen und erneut starten.
+    pause
+    exit /b 1
 )
 
-rem --- OneDrive Personal (Windows setzt die Variable automatisch) ---
+echo  [T7] Lege zentrale Struktur unter %T7_ROOT% an ...
+for %%F in (%T7_FOLDERS%) do (
+    if not exist "%T7_ROOT%\%%F" mkdir "%T7_ROOT%\%%F"
+)
+echo  [T7] fertig.
+
 if defined OneDrive (
+    set OD_ROOT=%OneDrive%\PRODUKTION
     echo  [OneDrive] gefunden: %OneDrive%
-    for %%F in (%FOLDERS%) do (
-        if not exist "%OneDrive%\PRODUKTION\%%F" mkdir "%OneDrive%\PRODUKTION\%%F"
+    echo  [OneDrive] Lege PC-uebergreifende Arbeitsordner an ...
+    for %%F in (%ONEDRIVE_FOLDERS%) do (
+        if not exist "!OD_ROOT!\%%F" mkdir "!OD_ROOT!\%%F"
     )
-    echo  [OneDrive] fertig - synchronisiert automatisch in die Cloud.
+    echo  [OneDrive] fertig.
+    echo.
+    echo  WICHTIG: In OneDrive "Dateien bei Bedarf" aktivieren:
+    echo          OneDrive-Einstellungen ^> Synchronisierung und Sicherung
+    echo          ^> Erweiterte Einstellungen ^> Dateien bei Bedarf EIN.
+    echo          Hinweis: Menuepunkte koennen je nach Sprache/Version abweichen.
 ) else (
     echo  [OneDrive] nicht eingerichtet - uebersprungen.
 )
 
 echo.
 echo  ============================================
-echo   FERTIG! Struktur angelegt.
-echo   Tipp: Grosse Dateien (Video/Audio) nach
-echo   06-ROHMATERIAL, 07-AUDIO, 08-FERTIG.
-echo   Die Anleitungen (Markdown-Dateien) aus dem
-echo   GitHub-Ordner "produktion" hineinkopieren.
+echo   REGELN (SICHER):
+echo   1) Duplikate nur EINMAL zentral auf T7 halten.
+echo   2) 06-ROHMATERIAL, 07-AUDIO, 08-FERTIG, Archiv nur auf T7.
+echo   3) Vor jedem Umzug IMMER zuerst SORTIEREN.bat starten.
+echo   4) Nie blind loeschen - erst Plan + Kopie + Stichprobe.
 echo  ============================================
 echo.
 pause

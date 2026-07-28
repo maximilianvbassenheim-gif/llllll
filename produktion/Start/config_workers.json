@@ -1,0 +1,60 @@
+{
+  "workers": [
+    {
+      "id": "worker_1",
+      "host": "192.168.1.101",
+      "port": 8001,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 1 — Main desktop"
+    },
+    {
+      "id": "worker_2",
+      "host": "192.168.1.102",
+      "port": 8002,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 2"
+    },
+    {
+      "id": "worker_3",
+      "host": "192.168.1.103",
+      "port": 8003,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 3"
+    },
+    {
+      "id": "worker_4",
+      "host": "192.168.1.104",
+      "port": 8004,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 4"
+    },
+    {
+      "id": "worker_5",
+      "host": "192.168.1.105",
+      "port": 8005,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 5"
+    },
+    {
+      "id": "worker_6",
+      "host": "192.168.1.106",
+      "port": 8006,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 6"
+    },
+    {
+      "id": "worker_7",
+      "host": "192.168.1.107",
+      "port": 8007,
+      "ollama_port": 11434,
+      "ssh_key": null,
+      "description": "Worker 7"
+    }
+  ]
+}
